@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import Navbar from '../components/common/Navbar';
 import { requestService } from '../services/requestService';
 import { approvalService } from '../services/approvalService';
@@ -7,6 +7,7 @@ import Modal from '../components/common/Modal';
 import { formatDate } from '../utils/helpers';
 import { REQUEST_TYPE_LABELS } from '../utils/constants';
 import toast from 'react-hot-toast';
+import { SocketContext } from '../context/SocketContext';
 
 const TeamLeadDashboard = () => {
     const [requests, setRequests] = useState([]);
@@ -14,10 +15,23 @@ const TeamLeadDashboard = () => {
     const [selectedRequest, setSelectedRequest] = useState(null);
     const [comment, setComment] = useState('');
     const [processing, setProcessing] = useState(false);
+    const { socket } = useContext(SocketContext);
 
     useEffect(() => {
         fetchRequests();
     }, []);
+
+    useEffect(() => {
+        if (socket) {
+            socket.on('notification', () => {
+                fetchRequests();
+            });
+
+            return () => {
+                socket.off('notification');
+            };
+        }
+    }, [socket]);
 
     const fetchRequests = async () => {
         try {

@@ -4,8 +4,8 @@ export const authService = {
   login: async (email, password) => {
     const response = await api.post('/auth/login', { email, password });
     if (response.data.success) {
-      localStorage.setItem('token', response.data.data.token);
-      localStorage.setItem('user', JSON.stringify(response.data.data));
+      sessionStorage.setItem('token', response.data.data.token);
+      sessionStorage.setItem('user', JSON.stringify(response.data.data));
     }
     return response.data;
   },
@@ -13,15 +13,15 @@ export const authService = {
   register: async (userData) => {
     const response = await api.post('/auth/register', userData);
     if (response.data.success) {
-      localStorage.setItem('token', response.data.data.token);
-      localStorage.setItem('user', JSON.stringify(response.data.data));
+      sessionStorage.setItem('token', response.data.data.token);
+      sessionStorage.setItem('user', JSON.stringify(response.data.data));
     }
     return response.data;
   },
 
   logout: () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('user');
     window.location.href = '/login';
   },
 
@@ -31,11 +31,11 @@ export const authService = {
   },
 
   isAuthenticated: () => {
-    return !!localStorage.getItem('token');
+    return !!sessionStorage.getItem('token');
   },
 
   getUser: () => {
-    const user = localStorage.getItem('user');
+    const user = sessionStorage.getItem('user');
     return user ? JSON.parse(user) : null;
   }
 };

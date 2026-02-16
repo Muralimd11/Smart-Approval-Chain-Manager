@@ -9,8 +9,8 @@ export const SocketProvider = ({ children }) => {
   const [connected, setConnected] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    
+    const token = sessionStorage.getItem('token');
+
     if (token) {
       const newSocket = io(SOCKET_URL, {
         auth: {
