@@ -30,6 +30,11 @@ export const authService = {
     return response.data;
   },
 
+  getAllUsers: async () => {
+    const response = await api.get('/auth/users');
+    return response.data;
+  },
+
   isAuthenticated: () => {
     return !!sessionStorage.getItem('token');
   },

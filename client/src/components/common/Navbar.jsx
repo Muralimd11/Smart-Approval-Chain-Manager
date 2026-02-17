@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import NotificationBell from '../notifications/NotificationBell';
 
@@ -19,6 +20,7 @@ const Navbar = () => {
                         <NotificationBell />
 
                         <div className="flex items-center space-x-3">
+                            <Link to="/users" className="text-gray-600 hover:text-indigo-600 font-medium text-sm">Directory</Link>
                             <div className="text-right">
                                 <p className="text-sm font-medium text-gray-700">{user?.name}</p>
                                 <p className="text-xs text-gray-500 capitalize">{user?.role}</p>

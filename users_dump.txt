@@ -1,0 +1,70 @@
+Starting script...
+Mongo URI: Found
+Connected to MongoDB
+================================================================================
+ALL USERS IN SYSTEM (DEBUG DUMP)
+================================================================================
+1. Alice Johnson
+   ID: 6993e6840e1fa57497989dc6
+   Email: alice@test.com
+   Role: employee
+   Department: "Marketing"
+
+2. John Employee
+   ID: 698577b2ba1c8fce3b64db92
+   Email: employee@test.com
+   Role: employee
+   Department: "Engineering"
+
+3. John Employee
+   ID: 698583d18defe13bc58e9709
+   Email: john2@test.com
+   Role: employee
+   Department: "Engineering"
+
+4. Carol Williams
+   ID: 6993e7fc0e1fa57497989dcc
+   Email: carol@test.com
+   Role: manager
+   Department: "Operations"
+
+5. Mike Manager
+   ID: 6985780eba1c8fce3b64db99
+   Email: manager@test.com
+   Role: manager
+   Department: "Engineering"
+
+6. Bob Smith
+   ID: 6993e7ec0e1fa57497989dc9
+   Email: bob@test.com
+   Role: teamlead
+   Department: "Sales"
+
+7. Davis
+   ID: 6993ec383a6e4ab21769faf2
+   Email: dav@test.com
+   Role: teamlead
+   Department: "Engineering"
+
+8. Henry Wilson
+   ID: 6993ec0b3a6e4ab21769faec
+   Email: henry@test.com
+   Role: teamlead
+   Department: "Engineering"
+
+9. Ivy Davis
+   ID: 6993ec203a6e4ab21769faef
+   Email: ivy@test.com
+   Role: teamlead
+   Department: "Sales"
+
+10. Sarah TeamLead
+   ID: 698577faba1c8fce3b64db96
+   Email: teamlead@test.com
+   Role: teamlead
+   Department: "Engineering"
+
+================================================================================
+TOTAL USERS: 10
+================================================================================
+Dump written to: C:\Users\Muralidharan\Downloads\smart-approval-chain-manager\smart-approval-chain-manager\users_dump.txt

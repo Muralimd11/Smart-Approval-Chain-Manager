@@ -25,6 +25,8 @@ const PurchaseRequestForm = ({ onSuccess }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        if (!window.confirm('Are you sure you want to submit this purchase request?')) return;
+
         if (!file) {
             toast.error('Please upload a PDF document');
             return;

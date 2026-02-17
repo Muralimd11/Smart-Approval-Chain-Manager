@@ -3,7 +3,8 @@ const {
   createRequest,
   getMyRequests,
   getRequest,
-  getAllRequests
+  getAllRequests,
+  deleteRequest
 } = require('../controllers/requestController');
 const { protect } = require('../middleware/authMiddleware');
 const { authorize } = require('../middleware/roleMiddleware');
@@ -17,6 +18,8 @@ router
   .get(protect, authorize('teamlead', 'manager'), getAllRequests);
 
 router.get('/my-requests', protect, authorize('employee'), getMyRequests);
-router.get('/:id', protect, getRequest);
+router.route('/:id')
+  .get(protect, getRequest)
+  .delete(protect, deleteRequest);
 
 module.exports = router;

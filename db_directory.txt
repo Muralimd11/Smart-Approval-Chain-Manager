@@ -1,0 +1,68 @@
+
+============================================================
+                   USER DIRECTORY
+============================================================
+
+--- EMPLOYEES (7) ---
+  - Name:   David Chen
+    Email:  david@test.com
+    Dept:   Engineering
+
+  - Name:   John Doe
+    Email:  john@test.com
+    Dept:   Engineering
+
+  - Name:   Grace Lee
+    Email:  grace@test.com
+    Dept:   Finance
+
+  - Name:   Frank Miller
+    Email:  frank@test.com
+    Dept:   HR
+
+  - Name:   Alice Johnson
+    Email:  alice@test.com
+    Dept:   Marketing
+
+  - Name:   Emma Brown
+    Email:  emma@test.com
+    Dept:   Sales
+
+  - Name:   Sally Smith
+    Email:  sally@test.com
+    Dept:   Sales
+
+
+--- TEAM LEADS (4) ---
+  - Name:   Dave TL
+    Email:  dave@test.com
+    Dept:   Engineering
+
+  - Name:   Henry Wilson
+    Email:  henry@test.com
+    Dept:   Engineering
+
+  - Name:   Bob Smith
+    Email:  bob@test.com
+    Dept:   Marketing
+
+  - Name:   Ivy TL
+    Email:  ivy@test.com
+    Dept:   Sales
+
+
+--- MANAGERS (3) ---
+  - Name:   Big Boss
+    Email:  boss@test.com
+    Dept:   Engineering
+
+  - Name:   Jack Thompson
+    Email:  jack@test.com
+    Dept:   Finance
+
+  - Name:   Carol Williams
+    Email:  carol@test.com
+    Dept:   Operations
+
+============================================================
+

@@ -28,12 +28,22 @@ export const NotificationProvider = ({ children }) => {
   useEffect(() => {
     if (socket) {
       socket.on('notification', (notification) => {
-        setNotifications((prev) => [notification, ...prev]);
-        setUnreadCount((prev) => prev + 1);
-        toast.success(notification.message, {
-          duration: 4000,
-          position: 'top-right'
-        });
+        const isActionNotification = ['request_approved', 'request_rejected'].includes(notification.type);
+
+        if (isActionNotification) {
+          // Automatically mark as read and DO NOT show toast
+          notificationService.markAsRead(notification._id).catch(err => console.error('Error auto-marking read:', err));
+          setNotifications((prev) => [{ ...notification, isRead: true }, ...prev]);
+          // Do not increment unreadCount
+        } else {
+          // Standard behavior for other notifications
+          setNotifications((prev) => [notification, ...prev]);
+          setUnreadCount((prev) => prev + 1);
+          toast.success(notification.message, {
+            duration: 4000,
+            position: 'top-right'
+          });
+        }
       });
 
       return () => {

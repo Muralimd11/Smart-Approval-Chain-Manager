@@ -1,17 +1,19 @@
 import React, { createContext, useEffect, useState } from 'react';
 import io from 'socket.io-client';
 import { SOCKET_URL } from '../utils/constants';
+import { useAuth } from '../hooks/useAuth';
 
 export const SocketContext = createContext();
 
 export const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
   const [connected, setConnected] = useState(false);
+  const { user, isAuthenticated } = useAuth();
 
   useEffect(() => {
-    const token = sessionStorage.getItem('token');
+    if (isAuthenticated && user) {
+      const token = sessionStorage.getItem('token');
 
-    if (token) {
       const newSocket = io(SOCKET_URL, {
         auth: {
           token
@@ -32,9 +34,17 @@ export const SocketProvider = ({ children }) => {
 
       return () => {
         newSocket.close();
+        setSocket(null);
+        setConnected(false);
       };
+    } else {
+      if (socket) {
+        socket.close();
+        setSocket(null);
+        setConnected(false);
+      }
     }
-  }, []);
+  }, [isAuthenticated, user]);
 
   const value = {
     socket,

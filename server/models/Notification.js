@@ -16,7 +16,7 @@ const notificationSchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    enum: ['request_submitted', 'request_approved', 'request_rejected', 'approval_needed'],
+    enum: ['request_submitted', 'request_approved', 'request_rejected', 'approval_needed', 'request_deleted'],
     required: true
   },
   message: {

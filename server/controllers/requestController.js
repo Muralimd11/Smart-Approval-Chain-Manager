@@ -108,8 +108,10 @@ exports.createRequest = async (req, res) => {
     const request = await Request.create(requestData);
     await request.populate('employee', 'name email department');
 
-    // Find team lead to notify
-    const teamLead = await User.findOne({ role: 'teamlead' });
+    // Find team lead of the employee's department to notify
+    const employee = await User.findById(req.user.id);
+    const teamLead = await User.findOne({ role: 'teamlead', department: employee.department });
+
     if (teamLead) {
       await notificationService.sendApprovalNeededNotification(
         request,
@@ -192,21 +194,50 @@ exports.getAllRequests = async (req, res) => {
   try {
     let query = {};
 
-    // If Team Lead, show only pending requests for team lead approval
+    // If Team Lead, show only pending requests for their department
     if (req.user.role === 'teamlead') {
+      const teamLead = await User.findById(req.user.id);
+
+      // Find all employees in the same department
+      const departmentEmployees = await User.find({
+        role: 'employee',
+        department: teamLead.department
+      }).select('_id');
+
+      const employeeIds = departmentEmployees.map(emp => emp._id);
+
+      console.log(`[DEBUG] TL ${teamLead.name} (Dept: ${teamLead.department}) viewing requests.`);
+      console.log(`[DEBUG] Found ${employeeIds.length} employees in ${teamLead.department}: ${employeeIds}`);
+
       query = {
+        employee: { $in: employeeIds },
         status: { $in: ['pending'] },
         'teamLeadApproval.status': 'pending'
       };
+
+      console.log('[DEBUG] Generated Query:', JSON.stringify(query));
     }
 
-    // If Manager, show only requests approved by team lead
+    // If Manager, show only requests approved by team lead for their department
     if (req.user.role === 'manager') {
+      const manager = await User.findById(req.user.id);
+
+      // Find all employees in the same department
+      const departmentEmployees = await User.find({
+        role: 'employee',
+        department: manager.department
+      }).select('_id');
+
+      const employeeIds = departmentEmployees.map(emp => emp._id);
+
       query = {
+        employee: { $in: employeeIds },
         status: { $in: ['approved_by_teamlead'] },
         'managerApproval.status': 'pending'
       };
     }
+
+    console.log(`[DEBUG] getAllRequests: User=${req.user.email}, Role=${req.user.role}`);
 
     const requests = await Request.find(query)
       .populate('employee', 'name email department')
@@ -220,6 +251,68 @@ exports.getAllRequests = async (req, res) => {
       data: requests
     });
   } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
+// @desc    Delete a request
+// @route   DELETE /api/requests/:id
+// @access  Private (Employee)
+exports.deleteRequest = async (req, res) => {
+  try {
+    const request = await Request.findById(req.params.id);
+
+    if (!request) {
+      return res.status(404).json({
+        success: false,
+        message: 'Request not found'
+      });
+    }
+
+    // Ensure user owns the request
+    if (request.employee.toString() !== req.user.id) {
+      return res.status(401).json({
+        success: false,
+        message: 'Not authorized to delete this request'
+      });
+    }
+
+    // Check status allowlist for deletion
+    const allowedStatuses = ['pending', 'approved_by_teamlead', 'rejected'];
+    if (!allowedStatuses.includes(request.status)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Cannot delete request in this status'
+      });
+    }
+
+    // If approved by team lead, notify them
+    if (request.status === 'approved_by_teamlead') {
+      const employee = await User.findById(req.user.id);
+      const teamLead = await User.findOne({ role: 'teamlead', department: employee.department });
+
+      if (teamLead) {
+        // Populate employee name for the notification
+        await request.populate('employee', 'name');
+        await notificationService.sendRequestDeletedNotification(
+          request,
+          teamLead._id,
+          request.employee.name
+        );
+      }
+    }
+
+    await Request.findByIdAndDelete(req.params.id); // Or request.remove() if using older Mongoose
+
+    res.status(200).json({
+      success: true,
+      data: {}
+    });
+  } catch (error) {
+    console.error(error);
     res.status(500).json({
       success: false,
       message: error.message

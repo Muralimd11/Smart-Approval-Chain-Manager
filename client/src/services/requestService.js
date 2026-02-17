@@ -23,5 +23,10 @@ export const requestService = {
   getRequest: async (id) => {
     const response = await api.get(`/requests/${id}`);
     return response.data;
+  },
+
+  deleteRequest: async (id) => {
+    const response = await api.delete(`/requests/${id}`);
+    return response.data;
   }
 };

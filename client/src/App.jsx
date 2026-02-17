@@ -16,6 +16,7 @@ import TeamLeadDashboard from './pages/TeamLeadDashboard';
 import ManagerDashboard from './pages/ManagerDashboard';
 import NotFound from './pages/NotFound';
 import Unauthorized from './pages/Unauthorized';
+import UserDirectory from './pages/UserDirectory';
 
 function App() {
   return (
@@ -26,7 +27,7 @@ function App() {
             <Toaster position="top-right" />
             <Routes>
               <Route path="/login" element={<LoginForm />} />
-              
+
               <Route
                 path="/employee/dashboard"
                 element={
@@ -37,7 +38,7 @@ function App() {
                   </PrivateRoute>
                 }
               />
-              
+
               <Route
                 path="/teamlead/dashboard"
                 element={
@@ -48,7 +49,7 @@ function App() {
                   </PrivateRoute>
                 }
               />
-              
+
               <Route
                 path="/manager/dashboard"
                 element={
@@ -59,7 +60,15 @@ function App() {
                   </PrivateRoute>
                 }
               />
-              
+
+              <Route
+                path="/users"
+                element={
+                  <PrivateRoute>
+                    <UserDirectory />
+                  </PrivateRoute>
+                }
+              />
               <Route path="/unauthorized" element={<Unauthorized />} />
               <Route path="/" element={<Navigate to="/login" />} />
               <Route path="*" element={<NotFound />} />

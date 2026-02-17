@@ -19,6 +19,9 @@ const LeaveRequestForm = ({ onSuccess }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (!window.confirm('Are you sure you want to submit this leave request?')) return;
+
         setLoading(true);
 
         const data = new FormData();
@@ -46,6 +49,7 @@ const LeaveRequestForm = ({ onSuccess }) => {
                 <input
                     type="date"
                     name="fromDate"
+                    min={new Date().toISOString().split('T')[0]}
                     value={formData.fromDate}
                     onChange={handleChange}
                     required
@@ -58,6 +62,7 @@ const LeaveRequestForm = ({ onSuccess }) => {
                 <input
                     type="date"
                     name="toDate"
+                    min={formData.fromDate || new Date().toISOString().split('T')[0]}
                     value={formData.toDate}
                     onChange={handleChange}
                     required

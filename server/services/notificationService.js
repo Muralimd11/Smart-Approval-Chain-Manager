@@ -5,11 +5,11 @@ const { getIO } = require('../config/socket');
 exports.createNotification = async (notificationData) => {
   try {
     const notification = await Notification.create(notificationData);
-    
+
     // Populate sender and request details
     await notification.populate('sender', 'name email');
     await notification.populate('request');
-    
+
     // Emit notification via Socket.io
     try {
       const io = getIO();
@@ -17,7 +17,7 @@ exports.createNotification = async (notificationData) => {
     } catch (socketError) {
       console.log('Socket emission failed:', socketError.message);
     }
-    
+
     return notification;
   } catch (error) {
     console.error('Error creating notification:', error);
@@ -28,7 +28,7 @@ exports.createNotification = async (notificationData) => {
 // Send approval needed notification
 exports.sendApprovalNeededNotification = async (request, recipientId, senderRole) => {
   const message = `New ${request.requestType} request from ${senderRole} needs your approval`;
-  
+
   return await this.createNotification({
     recipient: recipientId,
     sender: request.employee,
@@ -41,7 +41,7 @@ exports.sendApprovalNeededNotification = async (request, recipientId, senderRole
 // Send approval notification
 exports.sendApprovalNotification = async (request, approverId, approverRole) => {
   const message = `Your ${request.requestType} request has been approved by ${approverRole}`;
-  
+
   return await this.createNotification({
     recipient: request.employee,
     sender: approverId,
@@ -54,7 +54,7 @@ exports.sendApprovalNotification = async (request, approverId, approverRole) => 
 // Send rejection notification
 exports.sendRejectionNotification = async (request, rejecterId, rejecterRole, reason) => {
   const message = `Your ${request.requestType} request has been rejected by ${rejecterRole}${reason ? ': ' + reason : ''}`;
-  
+
   return await this.createNotification({
     recipient: request.employee,
     sender: rejecterId,
@@ -63,3 +63,16 @@ exports.sendRejectionNotification = async (request, rejecterId, rejecterRole, re
     message
   });
 };
+
+// Send request deleted notification
+exports.sendRequestDeletedNotification = async (request, recipientId, senderName) => {
+  const message = `The ${request.requestType} request from ${senderName} has been deleted by the employee`;
+
+  return await this.createNotification({
+    recipient: recipientId,
+    sender: request.employee._id || request.employee, // Handle populated or unpopulated
+    type: 'request_deleted',
+    message
+  });
+};
+
