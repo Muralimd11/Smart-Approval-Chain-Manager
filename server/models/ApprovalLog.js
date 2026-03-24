@@ -22,6 +22,9 @@ const approvalLogSchema = new mongoose.Schema({
     required: true
   },
   comment: String,
+  signature: String,
+  ipAddress: String,
+  userAgent: String,
   createdAt: {
     type: Date,
     default: Date.now

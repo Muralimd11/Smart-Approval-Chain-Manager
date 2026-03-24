@@ -2,14 +2,46 @@ const Request = require('../models/Request');
 const ApprovalLog = require('../models/ApprovalLog');
 const notificationService = require('../services/notificationService');
 const User = require('../models/User');
+const crypto = require('crypto');
+
+// Helper function to generate digital signature
+const generateSignature = (userId, requestId, action, timestamp) => {
+  const payload = `${userId}:${requestId}:${action}:${timestamp}`;
+  return crypto.createHmac('sha256', process.env.JWT_SECRET || 'secret-key')
+    .update(payload)
+    .digest('hex');
+};
 
 // @desc    Approve/Reject request by Team Lead
 // @route   PUT /api/approvals/teamlead/:id
 // @access  Private (Team Lead)
 exports.teamLeadApproval = async (req, res) => {
   try {
-    const { action, comment } = req.body; // action: 'approve' or 'reject'
+    const { action, comment, signaturePin } = req.body; // action: 'approve' or 'reject'
     
+    if (!signaturePin) {
+      return res.status(400).json({
+        success: false,
+        message: 'Signature PIN is required'
+      });
+    }
+
+    const approver = await User.findById(req.user.id).select('+signaturePin');
+    if (!approver.signaturePin) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please set your Signature PIN in your profile before taking action'
+      });
+    }
+
+    const isMatch = await approver.matchSignaturePin(signaturePin);
+    if (!isMatch) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid Signature PIN'
+      });
+    }
+
     const request = await Request.findById(req.params.id);
     
     if (!request) {
@@ -27,12 +59,20 @@ exports.teamLeadApproval = async (req, res) => {
     }
 
     if (action === 'approve') {
+      const timestamp = Date.now();
+      const ipAddress = req.ip || req.connection.remoteAddress;
+      const userAgent = req.headers['user-agent'] || 'Unknown';
+      const signature = generateSignature(req.user.id, request._id, 'approve', timestamp);
+
       // Approve by team lead
       request.teamLeadApproval = {
         approvedBy: req.user.id,
-        approvedAt: Date.now(),
+        approvedAt: timestamp,
         status: 'approved',
-        comment
+        comment,
+        signature,
+        ipAddress,
+        userAgent
       };
       request.status = 'approved_by_teamlead';
 
@@ -44,7 +84,10 @@ exports.teamLeadApproval = async (req, res) => {
         approver: req.user.id,
         action: 'approved',
         role: 'teamlead',
-        comment
+        comment,
+        signature,
+        ipAddress,
+        userAgent
       });
 
       // Send notification to employee
@@ -65,12 +108,20 @@ exports.teamLeadApproval = async (req, res) => {
       }
 
     } else if (action === 'reject') {
+      const timestamp = Date.now();
+      const ipAddress = req.ip || req.connection.remoteAddress;
+      const userAgent = req.headers['user-agent'] || 'Unknown';
+      const signature = generateSignature(req.user.id, request._id, 'reject', timestamp);
+
       // Reject by team lead
       request.teamLeadApproval = {
         approvedBy: req.user.id,
-        approvedAt: Date.now(),
+        approvedAt: timestamp,
         status: 'rejected',
-        comment
+        comment,
+        signature,
+        ipAddress,
+        userAgent
       };
       request.status = 'rejected';
       request.rejectedBy = req.user.id;
@@ -85,7 +136,10 @@ exports.teamLeadApproval = async (req, res) => {
         approver: req.user.id,
         action: 'rejected',
         role: 'teamlead',
-        comment
+        comment,
+        signature,
+        ipAddress,
+        userAgent
       });
 
       // Send rejection notification to employee
@@ -117,8 +171,31 @@ exports.teamLeadApproval = async (req, res) => {
 // @access  Private (Manager)
 exports.managerApproval = async (req, res) => {
   try {
-    const { action, comment } = req.body;
+    const { action, comment, signaturePin } = req.body;
     
+    if (!signaturePin) {
+      return res.status(400).json({
+        success: false,
+        message: 'Signature PIN is required'
+      });
+    }
+
+    const approver = await User.findById(req.user.id).select('+signaturePin');
+    if (!approver.signaturePin) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please set your Signature PIN in your profile before taking action'
+      });
+    }
+
+    const isMatch = await approver.matchSignaturePin(signaturePin);
+    if (!isMatch) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid Signature PIN'
+      });
+    }
+
     const request = await Request.findById(req.params.id);
     
     if (!request) {
@@ -136,12 +213,20 @@ exports.managerApproval = async (req, res) => {
     }
 
     if (action === 'approve') {
+      const timestamp = Date.now();
+      const ipAddress = req.ip || req.connection.remoteAddress;
+      const userAgent = req.headers['user-agent'] || 'Unknown';
+      const signature = generateSignature(req.user.id, request._id, 'approve', timestamp);
+
       // Final approval by manager
       request.managerApproval = {
         approvedBy: req.user.id,
-        approvedAt: Date.now(),
+        approvedAt: timestamp,
         status: 'approved',
-        comment
+        comment,
+        signature,
+        ipAddress,
+        userAgent
       };
       request.status = 'approved';
 
@@ -153,7 +238,10 @@ exports.managerApproval = async (req, res) => {
         approver: req.user.id,
         action: 'approved',
         role: 'manager',
-        comment
+        comment,
+        signature,
+        ipAddress,
+        userAgent
       });
 
       // Send final approval notification to employee
@@ -164,12 +252,20 @@ exports.managerApproval = async (req, res) => {
       );
 
     } else if (action === 'reject') {
+      const timestamp = Date.now();
+      const ipAddress = req.ip || req.connection.remoteAddress;
+      const userAgent = req.headers['user-agent'] || 'Unknown';
+      const signature = generateSignature(req.user.id, request._id, 'reject', timestamp);
+
       // Reject by manager
       request.managerApproval = {
         approvedBy: req.user.id,
-        approvedAt: Date.now(),
+        approvedAt: timestamp,
         status: 'rejected',
-        comment
+        comment,
+        signature,
+        ipAddress,
+        userAgent
       };
       request.status = 'rejected';
       request.rejectedBy = req.user.id;
@@ -184,7 +280,10 @@ exports.managerApproval = async (req, res) => {
         approver: req.user.id,
         action: 'rejected',
         role: 'manager',
-        comment
+        comment,
+        signature,
+        ipAddress,
+        userAgent
       });
 
       // Send rejection notification to employee

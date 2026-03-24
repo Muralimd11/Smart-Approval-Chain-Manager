@@ -1,18 +1,20 @@
 import api from './api';
 
 export const approvalService = {
-  teamLeadApproval: async (requestId, action, comment) => {
+  teamLeadApproval: async (requestId, action, comment, signaturePin) => {
     const response = await api.put(`/approvals/teamlead/${requestId}`, {
       action,
-      comment
+      comment,
+      signaturePin
     });
     return response.data;
   },
 
-  managerApproval: async (requestId, action, comment) => {
+  managerApproval: async (requestId, action, comment, signaturePin) => {
     const response = await api.put(`/approvals/manager/${requestId}`, {
       action,
-      comment
+      comment,
+      signaturePin
     });
     return response.data;
   },

@@ -57,49 +57,55 @@ const PurchaseRequestForm = ({ onSuccess }) => {
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-                <label className="block text-sm font-medium text-gray-700">Product Name</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300">Product Name</label>
                 <input
                     type="text"
                     name="productName"
+                    id="productName"
                     value={formData.productName}
-                    onChange={handleChange}
+                    onChange={(e) => setFormData({ ...formData, productName: e.target.value })}
                     required
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                    className="mt-1 block w-full px-3 py-2 bg-[#eef2f6] dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md text-gray-900 dark:text-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                    placeholder="What do you need to purchase?"
                 />
             </div>
 
             <div>
-                <label className="block text-sm font-medium text-gray-700">Market Price</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300">Market Price</label>
                 <input
                     type="number"
                     name="marketPrice"
+                    id="marketPrice"
                     value={formData.marketPrice}
-                    onChange={handleChange}
+                    onChange={(e) => setFormData({ ...formData, marketPrice: e.target.value })}
                     required
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                    className="mt-1 block w-full px-3 py-2 bg-[#eef2f6] dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md text-gray-900 dark:text-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                    placeholder="0.00"
                 />
             </div>
 
             <div>
-                <label className="block text-sm font-medium text-gray-700">Reason for Purchase</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300">Reason for Purchase</label>
                 <textarea
                     name="reason"
+                    id="reason"
                     value={formData.reason}
-                    onChange={handleChange}
+                    onChange={(e) => setFormData({ ...formData, reason: e.target.value })}
                     required
                     rows="3"
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                    className="mt-1 block w-full px-3 py-2 bg-[#eef2f6] dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md text-gray-900 dark:text-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                    placeholder="Why is this purchase necessary?"
                 />
             </div>
 
             <div>
-                <label className="block text-sm font-medium text-gray-700">Upload PDF Document</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300">Upload PDF Document</label>
                 <input
                     type="file"
                     accept=".pdf"
                     onChange={handleFileChange}
                     required
-                    className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+                    className="mt-1 block w-full text-sm text-gray-500 dark:text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 dark:file:bg-indigo-900/30 file:text-indigo-700 dark:file:text-indigo-400 hover:file:bg-indigo-100 dark:hover:file:bg-indigo-900/50"
                 />
             </div>
 

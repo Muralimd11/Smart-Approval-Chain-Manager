@@ -27,6 +27,14 @@ export const AuthProvider = ({ children }) => {
     return response;
   };
 
+  const updateSignaturePin = async (pin, oldPin) => {
+    const response = await authService.updateSignaturePin({ signaturePin: pin, oldPin });
+    if (response.success) {
+      setUser(prev => ({ ...prev, hasSignaturePin: true }));
+    }
+    return response;
+  };
+
   const logout = () => {
     authService.logout();
     setUser(null);
@@ -38,6 +46,7 @@ export const AuthProvider = ({ children }) => {
     login,
     register,
     logout,
+    updateSignaturePin,
     isAuthenticated: !!user
   };
 

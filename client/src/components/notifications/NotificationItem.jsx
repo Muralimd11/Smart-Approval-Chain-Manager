@@ -14,7 +14,7 @@ const NotificationItem = ({ notification }) => {
     return (
         <div
             onClick={handleClick}
-            className={`p-4 hover:bg-gray-50 cursor-pointer ${!notification.isRead ? 'bg-blue-50' : ''
+            className={`p-4 hover:bg-[#eef2f6] cursor-pointer ${!notification.isRead ? 'bg-blue-50' : ''
                 }`}
         >
             <p className="text-sm text-gray-900">{notification.message}</p>

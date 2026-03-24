@@ -36,8 +36,8 @@ const UserDirectory = () => {
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {users.map(user => (
-                    <div key={user._id} className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-                        <div className="flex items-center space-x-4">
+                    <div key={user._id} className="bg-[#eef2f6] p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                        <div className="flex items-center space-x-4 mb-4">
                             <div className={`h-12 w-12 rounded-full bg-${color}-100 flex items-center justify-center text-${color}-600 font-bold text-lg`}>
                                 {user.name.charAt(0)}
                             </div>
@@ -54,7 +54,7 @@ const UserDirectory = () => {
     );
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen">
             <Navbar />
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <div className="flex justify-between items-center mb-8">

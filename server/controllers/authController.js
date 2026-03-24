@@ -59,6 +59,7 @@ exports.register = async (req, res) => {
         email: user.email,
         role: user.role,
         department: user.department,
+        hasSignaturePin: false, // newly registered user has no PIN yet
         token: generateToken(user._id)
       }
     });
@@ -86,7 +87,7 @@ exports.login = async (req, res) => {
     }
 
     // Check for user
-    const user = await User.findOne({ email }).select('+password');
+    const user = await User.findOne({ email }).select('+password +signaturePin');
 
     if (!user) {
       console.log(`[DEBUG] Login failed: User ${email} not found`);
@@ -115,6 +116,7 @@ exports.login = async (req, res) => {
         email: user.email,
         role: user.role,
         department: user.department,
+        hasSignaturePin: !!user.signaturePin,
         token: generateToken(user._id)
       }
     });
@@ -131,11 +133,18 @@ exports.login = async (req, res) => {
 // @access  Private
 exports.getMe = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id);
+    const user = await User.findById(req.user.id).select('+signaturePin');
 
     res.status(200).json({
       success: true,
-      data: user
+      data: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        department: user.department,
+        hasSignaturePin: !!user.signaturePin
+      }
     });
   } catch (error) {
     res.status(500).json({
@@ -163,3 +172,54 @@ exports.getAllUsers = async (req, res) => {
     });
   }
 };
+
+// @desc    Update signature PIN
+// @route   PUT /api/auth/signature-pin
+// @access  Private
+exports.updateSignaturePin = async (req, res) => {
+  try {
+    const { signaturePin, oldPin } = req.body;
+
+    if (!signaturePin || signaturePin.length < 4) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide a valid signature PIN (at least 4 characters)'
+      });
+    }
+
+    const user = await User.findById(req.user.id).select('+password +signaturePin');
+    
+    // If user already has a PIN, verify the old one before updating
+    if (user.signaturePin) {
+      if (!oldPin) {
+        return res.status(400).json({
+          success: false,
+          message: 'Please provide your current Signature PIN to update it'
+        });
+      }
+      
+      const isMatch = await user.matchSignaturePin(oldPin);
+      if (!isMatch) {
+        return res.status(400).json({
+          success: false,
+          message: 'Incorrect current Signature PIN'
+        });
+      }
+    }
+
+    user.signaturePin = signaturePin;
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Signature PIN updated successfully',
+      hasSignaturePin: true
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+

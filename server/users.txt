@@ -1,0 +1,15 @@
+john@test.com - employee - Engineering
+dave@test.com - teamlead - Engineering
+sally@test.com - employee - Sales
+ivy@test.com - teamlead - Sales
+boss@test.com - manager - Engineering
+alice@test.com - employee - Marketing
+david@test.com - employee - Engineering
+emma@test.com - employee - Sales
+frank@test.com - employee - HR
+grace@test.com - employee - Finance
+bob@test.com - teamlead - Marketing
+henry@test.com - teamlead - Engineering
+carol@test.com - manager - Operations
+jack@test.com - manager - Finance
+hardik@test.com - manager - Marketing

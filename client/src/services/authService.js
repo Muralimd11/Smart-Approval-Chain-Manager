@@ -35,6 +35,19 @@ export const authService = {
     return response.data;
   },
 
+  updateSignaturePin: async (pinData) => {
+    const response = await api.put('/auth/signature-pin', pinData);
+    if (response.data.success) {
+      // Update session storage
+      const user = JSON.parse(sessionStorage.getItem('user'));
+      if (user) {
+        user.hasSignaturePin = true;
+        sessionStorage.setItem('user', JSON.stringify(user));
+      }
+    }
+    return response.data;
+  },
+
   isAuthenticated: () => {
     return !!sessionStorage.getItem('token');
   },

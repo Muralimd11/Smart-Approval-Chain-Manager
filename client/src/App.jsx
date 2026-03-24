@@ -4,6 +4,7 @@ import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContext';
 import { SocketProvider } from './context/SocketContext';
 import { NotificationProvider } from './context/NotificationContext';
+import { ThemeProvider } from './context/ThemeContext';
 
 // Auth Components
 import LoginForm from './components/auth/LoginForm';
@@ -21,8 +22,9 @@ import UserDirectory from './pages/UserDirectory';
 function App() {
   return (
     <AuthProvider>
-      <SocketProvider>
-        <NotificationProvider>
+      <ThemeProvider>
+        <SocketProvider>
+          <NotificationProvider>
           <Router>
             <Toaster position="top-right" />
             <Routes>
@@ -75,7 +77,8 @@ function App() {
             </Routes>
           </Router>
         </NotificationProvider>
-      </SocketProvider>
+        </SocketProvider>
+      </ThemeProvider>
     </AuthProvider>
   );
 }

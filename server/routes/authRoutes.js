@@ -8,5 +8,6 @@ router.post('/register', register);
 router.post('/login', login);
 router.get('/me', protect, getMe);
 router.get('/users', protect, getAllUsers);
+router.put('/signature-pin', protect, exports.updateSignaturePin || require('../controllers/authController').updateSignaturePin);
 
 module.exports = router;

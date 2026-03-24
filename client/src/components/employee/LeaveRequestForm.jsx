@@ -45,7 +45,7 @@ const LeaveRequestForm = ({ onSuccess }) => {
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-                <label className="block text-sm font-medium text-gray-700">From Date</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300">From Date</label>
                 <input
                     type="date"
                     name="fromDate"
@@ -53,32 +53,32 @@ const LeaveRequestForm = ({ onSuccess }) => {
                     value={formData.fromDate}
                     onChange={handleChange}
                     required
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                    className="mt-1 block w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md text-gray-900 dark:text-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                 />
             </div>
 
             <div>
-                <label className="block text-sm font-medium text-gray-700">To Date</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300">To Date</label>
                 <input
                     type="date"
                     name="toDate"
                     min={formData.fromDate || new Date().toISOString().split('T')[0]}
+                    id="toDate"
                     value={formData.toDate}
-                    onChange={handleChange}
-                    required
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                    onChange={(e) => setFormData({ ...formData, toDate: e.target.value })}
+                    className="mt-1 block w-full px-3 py-2 bg-[#eef2f6] dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md text-gray-900 dark:text-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                 />
             </div>
 
             <div>
-                <label className="block text-sm font-medium text-gray-700">Reason for Leave</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300">Reason for Leave</label>
                 <textarea
                     name="reason"
                     value={formData.reason}
                     onChange={handleChange}
                     required
                     rows="3"
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                    className="mt-1 block w-full px-3 py-2 bg-[#eef2f6] dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md text-gray-900 dark:text-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                 />
             </div>
 

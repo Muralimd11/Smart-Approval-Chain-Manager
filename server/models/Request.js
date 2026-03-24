@@ -51,7 +51,10 @@ const requestSchema = new mongoose.Schema({
       type: String,
       enum: ['pending', 'approved', 'rejected']
     },
-    comment: String
+    comment: String,
+    signature: String,
+    ipAddress: String,
+    userAgent: String
   },
   
   managerApproval: {
@@ -64,7 +67,10 @@ const requestSchema = new mongoose.Schema({
       type: String,
       enum: ['pending', 'approved', 'rejected']
     },
-    comment: String
+    comment: String,
+    signature: String,
+    ipAddress: String,
+    userAgent: String
   },
   
   rejectedBy: {
