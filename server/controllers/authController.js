@@ -1,5 +1,7 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
+const sendEmail = require('../utils/sendEmail');
 
 // Generate JWT Token
 const generateToken = (id) => {
@@ -220,6 +222,90 @@ exports.updateSignaturePin = async (req, res) => {
       success: false,
       message: error.message
     });
+  }
+};
+
+// @desc    Forgot signature PIN
+// @route   POST /api/auth/forgot-signature-pin
+// @access  Private
+exports.forgotSignaturePin = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    // Generate token
+    const resetToken = crypto.randomBytes(20).toString('hex');
+
+    // Hash token and set to pinResetToken field
+    user.pinResetToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+    user.pinResetExpire = Date.now() + 10 * 60 * 1000; // 10 minutes
+
+    await user.save({ validateBeforeSave: false });
+
+    // Create reset url (we assume frontend is running on localhost:3000 in dev or the origin)
+    const resetUrl = `${req.headers.origin || 'http://localhost:3000'}/reset-signature-pin/${resetToken}`;
+
+    const message = `You are receiving this email because you (or someone else) have requested the reset of your Signature PIN.\n\nPlease go to this link to reset it: \n\n${resetUrl}\n\nThis link will expire in 10 minutes.`;
+
+    try {
+      await sendEmail({
+        email: user.email,
+        subject: 'Signature PIN Reset Token',
+        message
+      });
+
+      res.status(200).json({ success: true, message: 'Email sent! Check your inbox or terminal.' });
+    } catch (err) {
+      console.log('Error sending email:', err);
+      user.pinResetToken = undefined;
+      user.pinResetExpire = undefined;
+      await user.save({ validateBeforeSave: false });
+      return res.status(500).json({ success: false, message: 'Email could not be sent' });
+    }
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// @desc    Reset signature PIN
+// @route   PUT /api/auth/reset-signature-pin/:token
+// @access  Public
+exports.resetSignaturePin = async (req, res) => {
+  try {
+    const resetToken = req.params.token;
+
+    // Get hashed token
+    const resetTokenHash = crypto.createHash('sha256').update(resetToken).digest('hex');
+
+    const user = await User.findOne({
+      pinResetToken: resetTokenHash,
+      pinResetExpire: { $gt: Date.now() }
+    });
+
+    if (!user) {
+      return res.status(400).json({ success: false, message: 'Invalid or expired token' });
+    }
+
+    // Set new pin
+    const { signaturePin } = req.body;
+    if (!signaturePin || signaturePin.length < 4) {
+      return res.status(400).json({ success: false, message: 'Please provide a valid signature PIN (at least 4 characters)' });
+    }
+
+    user.signaturePin = signaturePin;
+    user.pinResetToken = undefined;
+    user.pinResetExpire = undefined;
+
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Signature PIN reset successfully. You can now use your new PIN.'
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 

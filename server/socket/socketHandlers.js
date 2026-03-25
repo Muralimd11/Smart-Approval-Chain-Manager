@@ -16,10 +16,11 @@ const socketHandlers = (io) => {
         if (user) {
           socket.userId = user._id.toString();
           socket.join(socket.userId);
-          console.log(`User ${user.name} joined room ${socket.userId}`);
+          console.log(`User ${user.name} (${user.role}) joined room ${socket.userId}`);
         }
       } catch (error) {
-        console.log('Socket authentication failed:', error.message);
+        // Silently handle - user not logged in yet
+        console.log('Socket connected without authentication (user not logged in)');
       }
     }
 

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { useTheme } from '../../context/ThemeContext';
+import { authService } from '../../services/authService';
 import NotificationBell from '../notifications/NotificationBell';
 import Modal from './Modal';
 import toast from 'react-hot-toast';
@@ -33,6 +34,21 @@ const Navbar = () => {
             setOldPin('');
         } catch (error) {
             toast.error(error.response?.data?.message || "Failed to set PIN");
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const handleForgotPin = async () => {
+        setIsSubmitting(true);
+        try {
+            await authService.forgotSignaturePin();
+            toast.success("Reset link sent! Check your email or terminal.");
+            setIsPinModalOpen(false);
+            setPin('');
+            setOldPin('');
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Failed to send reset email");
         } finally {
             setIsSubmitting(false);
         }
@@ -118,7 +134,16 @@ const Navbar = () => {
                     <form onSubmit={handlePinSetup} className="space-y-4">
                         {user?.hasSignaturePin && (
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Current PIN / Passphrase</label>
+                                <div className="flex justify-between items-center mb-1">
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-slate-300">Current PIN / Passphrase</label>
+                                    <button
+                                        type="button"
+                                        onClick={handleForgotPin}
+                                        className="text-xs text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 font-medium"
+                                    >
+                                        Forgot PIN?
+                                    </button>
+                                </div>
                                 <input
                                     type="password"
                                     value={oldPin}

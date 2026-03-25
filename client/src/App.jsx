@@ -18,6 +18,7 @@ import ManagerDashboard from './pages/ManagerDashboard';
 import NotFound from './pages/NotFound';
 import Unauthorized from './pages/Unauthorized';
 import UserDirectory from './pages/UserDirectory';
+import ResetSignaturePin from './pages/ResetSignaturePin';
 
 function App() {
   return (
@@ -71,6 +72,7 @@ function App() {
                   </PrivateRoute>
                 }
               />
+              <Route path="/reset-signature-pin/:token" element={<ResetSignaturePin />} />
               <Route path="/unauthorized" element={<Unauthorized />} />
               <Route path="/" element={<Navigate to="/login" />} />
               <Route path="*" element={<NotFound />} />

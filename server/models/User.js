@@ -34,6 +34,8 @@ const userSchema = new mongoose.Schema({
     type: String,
     select: false
   },
+  pinResetToken: String,
+  pinResetExpire: Date,
   createdAt: {
     type: Date,
     default: Date.now

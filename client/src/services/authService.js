@@ -48,6 +48,16 @@ export const authService = {
     return response.data;
   },
 
+  forgotSignaturePin: async () => {
+    const response = await api.post('/auth/forgot-signature-pin');
+    return response.data;
+  },
+
+  resetSignaturePin: async (token, signaturePin) => {
+    const response = await api.put(`/auth/reset-signature-pin/${token}`, { signaturePin });
+    return response.data;
+  },
+
   isAuthenticated: () => {
     return !!sessionStorage.getItem('token');
   },
