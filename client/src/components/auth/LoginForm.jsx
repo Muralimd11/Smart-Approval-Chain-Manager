@@ -6,9 +6,10 @@ import toast from 'react-hot-toast';
 
 const LoginForm = () => {
   const [selectedRole, setSelectedRole] = useState(null);
-  const [formData, setFormData] = useState({ email: '', password: '' });
+  const [isSignup, setIsSignup] = useState(false);
+  const [formData, setFormData] = useState({ name: '', email: '', password: '', department: '' });
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const { login, register } = useAuth();
   const { isDarkMode, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
@@ -16,26 +17,45 @@ const LoginForm = () => {
 
   const handleRoleSelect = (role) => {
     setSelectedRole(role);
-    setFormData({ email: '', password: '' });
+    setIsSignup(false);
+    setFormData({ name: '', email: '', password: '', department: '' });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await login(formData.email, formData.password);
-      if (response.success) {
-        const userRole = response.data.role;
-        if (userRole !== selectedRole) {
-          toast.error(`Invalid login for ${selectedRole}. You are a ${userRole}.`);
+      if (isSignup) {
+        if (!formData.department || formData.department.trim() === '') {
+          toast.error('Department is required');
           setLoading(false);
           return;
         }
-        toast.success('Login successful!');
-        navigate(`/${userRole}/dashboard`);
+        
+        const response = await register({
+          ...formData,
+          role: selectedRole
+        });
+        
+        if (response.success) {
+          toast.success('Registration successful!');
+          navigate(`/${selectedRole}/dashboard`);
+        }
+      } else {
+        const response = await login(formData.email, formData.password);
+        if (response.success) {
+          const userRole = response.data.role;
+          if (userRole !== selectedRole) {
+            toast.error(`Invalid login for ${selectedRole}. You are a ${userRole}.`);
+            setLoading(false);
+            return;
+          }
+          toast.success('Login successful!');
+          navigate(`/${userRole}/dashboard`);
+        }
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Login failed');
+      toast.error(error.response?.data?.message || (isSignup ? 'Registration failed' : 'Login failed'));
     } finally {
       setLoading(false);
     }
@@ -155,11 +175,22 @@ const LoginForm = () => {
         
         <div className="flex-1 flex flex-col justify-center w-full max-w-md mx-auto animate-fade-in pb-12">
           <div className="mb-10">
-            <h2 className="text-4xl font-extrabold tracking-tight mb-2 text-slate-900 dark:text-white">Sign In</h2>
-            <p className="text-slate-500 dark:text-slate-400 font-medium">Enter your credentials to access the {theme.title.toLowerCase()}</p>
+            <h2 className="text-4xl font-extrabold tracking-tight mb-2 text-slate-900 dark:text-white">{isSignup ? 'Sign Up' : 'Sign In'}</h2>
+            <p className="text-slate-500 dark:text-slate-400 font-medium">
+              {isSignup ? `Create an account to access the ${theme.title.toLowerCase()}` : `Enter your credentials to access the ${theme.title.toLowerCase()}`}
+            </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
+            {isSignup && (
+              <div>
+                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Full Name</label>
+                <input type="text" name="name" required value={formData.name} onChange={handleChange} 
+                  className="w-full px-5 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all shadow-sm"
+                  placeholder="John Doe" 
+                />
+              </div>
+            )}
             <div>
               <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Work Email</label>
               <input type="email" name="email" required value={formData.email} onChange={handleChange} 
@@ -174,21 +205,49 @@ const LoginForm = () => {
                 placeholder="••••••••" 
               />
             </div>
+            {isSignup && (
+              <div>
+                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Department</label>
+                <div className="relative">
+                  <select name="department" required value={formData.department} onChange={handleChange} 
+                    className="w-full px-5 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all shadow-sm appearance-none"
+                  >
+                    <option value="" disabled>Select Department</option>
+                    <option value="Engineering">Engineering</option>
+                    <option value="Finance">Finance</option>
+                    <option value="Human Resources">Human Resources</option>
+                    <option value="Sales">Sales</option>
+                    <option value="Marketing">Marketing</option>
+                    <option value="Operations">Operations</option>
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                  </div>
+                </div>
+              </div>
+            )}
 
             <button type="submit" disabled={loading} 
               className={`w-full py-4 px-4 rounded-xl text-white font-bold text-lg bg-gradient-to-r ${theme.grad} hover:shadow-lg hover:-translate-y-0.5 transform transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 mt-4`}
             >
-              {loading ? 'Authenticating...' : 'Secure Sign In'}
+              {loading ? (isSignup ? 'Creating Account...' : 'Authenticating...') : (isSignup ? 'Sign Up' : 'Secure Sign In')}
             </button>
+            <div className="text-center mt-4">
+              <button type="button" onClick={() => setIsSignup(!isSignup)} className="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                {isSignup ? 'Already have an account? Log In' : "Don't have an account? Sign Up"}
+              </button>
+            </div>
           </form>
 
-          <div className="mt-10 bg-slate-200/50 dark:bg-slate-800/50 rounded-xl p-5 border border-slate-200 dark:border-slate-700">
-            <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Demo Access</p>
-            <p className="font-mono text-sm text-slate-700 dark:text-slate-300">
-              {selectedRole}@test.com<br/>
-              <span className="text-slate-500 dark:text-slate-400 text-xs mt-1 block">password123</span>
-            </p>
-          </div>
+          {!isSignup && (
+            <div className="mt-10 bg-slate-200/50 dark:bg-slate-800/50 rounded-xl p-5 border border-slate-200 dark:border-slate-700">
+              <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Demo Access</p>
+              <p className="font-mono text-sm text-slate-700 dark:text-slate-300">
+                {selectedRole}@test.com<br/>
+                <span className="text-slate-500 dark:text-slate-400 text-xs mt-1 block">password123</span>
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </div>

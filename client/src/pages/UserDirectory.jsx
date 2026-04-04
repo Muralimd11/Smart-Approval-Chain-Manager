@@ -31,20 +31,20 @@ const UserDirectory = () => {
 
     const UserSection = ({ title, users, color }) => (
         <div className="mb-8">
-            <h3 className={`text-xl font-bold mb-4 text-${color}-800 border-b-2 border-${color}-200 pb-2`}>
+            <h3 className={`text-xl font-bold mb-4 text-${color}-800 dark:text-${color}-400 border-b-2 border-${color}-200 dark:border-${color}-800/30 pb-2`}>
                 {title} ({users.length})
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {users.map(user => (
-                    <div key={user._id} className="bg-[#eef2f6] p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                    <div key={user._id} className="bg-[#eef2f6] dark:bg-slate-800/80 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700/50 hover:shadow-md transition-shadow">
                         <div className="flex items-center space-x-4 mb-4">
-                            <div className={`h-12 w-12 rounded-full bg-${color}-100 flex items-center justify-center text-${color}-600 font-bold text-lg`}>
+                            <div className={`h-12 w-12 rounded-full bg-${color}-100 dark:bg-${color}-500/20 flex items-center justify-center text-${color}-600 dark:text-${color}-400 font-bold text-lg`}>
                                 {user.name.charAt(0)}
                             </div>
                             <div>
-                                <p className="font-semibold text-gray-900">{user.name}</p>
-                                <p className="text-sm text-gray-500">{user.email}</p>
-                                <p className="text-xs font-medium text-gray-400 mt-1 uppercase">{user.department || 'N/A'}</p>
+                                <p className="font-semibold text-gray-900 dark:text-white">{user.name}</p>
+                                <p className="text-sm text-gray-500 dark:text-slate-400">{user.email}</p>
+                                <p className="text-xs font-medium text-gray-400 dark:text-slate-500 mt-1 uppercase">{user.department || 'N/A'}</p>
                             </div>
                         </div>
                     </div>
@@ -54,15 +54,15 @@ const UserDirectory = () => {
     );
 
     return (
-        <div className="min-h-screen">
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors">
             <Navbar />
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <div className="flex justify-between items-center mb-8">
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900">User Directory</h1>
-                        <p className="mt-1 text-sm text-gray-500">View details of all employees, team leads, and managers.</p>
+                        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">User Directory</h1>
+                        <p className="mt-1 text-sm text-gray-500 dark:text-slate-400">View details of all employees, team leads, and managers.</p>
                     </div>
-                    <button onClick={() => window.history.back()} className="text-gray-600 hover:text-gray-900">
+                    <button onClick={() => window.history.back()} className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
                         &larr; Back
                     </button>
                 </div>
