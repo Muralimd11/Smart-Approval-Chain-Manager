@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import Navbar from '../components/common/Navbar';
+import Layout from '../components/common/Layout';
 import RequestForm from '../components/employee/RequestForm';
 import { requestService } from '../services/requestService';
 import LoadingSpinner from '../components/common/LoadingSpinner';
@@ -207,10 +207,8 @@ const EmployeeDashboard = () => {
     );
 
     return (
-        <div className="min-h-screen">
-            <Navbar />
-
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <Layout>
+            <div className="max-w-7xl mx-auto py-4">
                 <div className="flex flex-col md:flex-row md:items-center justify-between mb-8">
                     <div>
                         <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">My Requests</h1>
@@ -308,7 +306,7 @@ const EmployeeDashboard = () => {
                     </div>
                 </div>
             </div>
-        </div>
+        </Layout>
     );
 };
 

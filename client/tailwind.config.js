@@ -6,7 +6,18 @@ module.exports = {
   darkMode: 'class',
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['"DM Sans"', 'sans-serif'],
+      },
       colors: {
+        brand: {
+          bg: '#F8F9F5', // light cream/beige
+          sidebar: '#FFFFFF', // clean white
+          card: '#FFFFFF',
+          text: '#2D3748', // soft dark gray for headers
+          muted: '#A0AEC0', // for subtext
+          accent: '#2B6CB0', // professional blue
+        },
         primary: {
           50: '#eff6ff',
           100: '#dbeafe',

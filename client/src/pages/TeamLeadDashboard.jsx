@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import Navbar from '../components/common/Navbar';
+import Layout from '../components/common/Layout';
 import { requestService } from '../services/requestService';
 import { approvalService } from '../services/approvalService';
 import LoadingSpinner from '../components/common/LoadingSpinner';
@@ -134,10 +134,8 @@ const TeamLeadDashboard = () => {
     );
 
     return (
-        <div className="min-h-screen">
-            <Navbar />
-
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <Layout>
+            <div className="max-w-7xl mx-auto py-4">
                 <div className="mb-10 flex flex-col md:flex-row md:items-center justify-between">
                     <div>
                         <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">Team Lead Dashboard</h1>
@@ -268,7 +266,7 @@ const TeamLeadDashboard = () => {
                     </div>
                 )}
             </Modal>
-        </div>
+        </Layout>
     );
 };
 

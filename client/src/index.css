@@ -4,12 +4,10 @@
 
 body {
   margin: 0;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: 'DM Sans', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  @apply bg-slate-100 text-slate-800 transition-colors duration-200;
+  @apply bg-brand-bg text-brand-text transition-colors duration-200;
 }
 
 .dark body {
@@ -41,10 +39,10 @@ code {
 
 @layer utilities {
   .glass {
-    @apply bg-indigo-100/80 dark:bg-slate-900/80 backdrop-blur-xl border border-indigo-200/50 dark:border-slate-700/50 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.3)];
+    @apply bg-white/90 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 shadow-sm;
   }
   .glass-card {
-    @apply bg-slate-200/80 dark:bg-slate-800/90 backdrop-blur-md border border-slate-300/50 dark:border-slate-700/50 shadow-sm hover:shadow-md transition-all duration-300;
+    @apply bg-brand-card dark:bg-slate-800 border border-gray-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all duration-300;
   }
   .animate-fade-in-up {
     animation: fadeInUp 0.5s ease-out forwards;

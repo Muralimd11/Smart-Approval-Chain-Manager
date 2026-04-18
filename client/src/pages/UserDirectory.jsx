@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { authService } from '../services/authService';
-import Navbar from '../components/common/Navbar';
+import Layout from '../components/common/Layout';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 
 const UserDirectory = () => {
@@ -30,37 +30,79 @@ const UserDirectory = () => {
     const managers = users.filter(u => u.role === 'manager');
 
     const UserSection = ({ title, users, color }) => (
-        <div className="mb-8">
-            <h3 className={`text-xl font-bold mb-4 text-${color}-800 dark:text-${color}-400 border-b-2 border-${color}-200 dark:border-${color}-800/30 pb-2`}>
-                {title} ({users.length})
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {users.map(user => (
-                    <div key={user._id} className="bg-[#eef2f6] dark:bg-slate-800/80 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700/50 hover:shadow-md transition-shadow">
-                        <div className="flex items-center space-x-4 mb-4">
-                            <div className={`h-12 w-12 rounded-full bg-${color}-100 dark:bg-${color}-500/20 flex items-center justify-center text-${color}-600 dark:text-${color}-400 font-bold text-lg`}>
-                                {user.name.charAt(0)}
+        <div className="mb-10 bg-white border border-gray-200 dark:border-slate-700/50 rounded-2xl overflow-hidden shadow-sm">
+            <div className={`px-6 py-5 border-b border-gray-100 dark:border-slate-700/50 bg-${color}-50/30 flex items-center justify-between`}>
+                <div className="flex items-center space-x-3">
+                    <div className={`w-2 h-6 bg-${color}-400 rounded-full`}></div>
+                    <h3 className={`text-base font-bold text-${color}-900 dark:text-${color}-400 uppercase tracking-widest`}>
+                        {title}
+                    </h3>
+                </div>
+                <div className="flex items-center space-x-4">
+                    <span className="text-xs font-medium text-gray-500">Active Directory Block</span>
+                    <span className="text-xs font-bold text-gray-700 bg-white shadow-sm border border-gray-200 px-3 py-1 rounded-full">{users.length} members</span>
+                </div>
+            </div>
+            
+            <div className="divide-y divide-gray-100 dark:divide-slate-700/50">
+                {users.length === 0 ? (
+                    <div className="px-6 py-8 text-center text-sm text-gray-400">No {title.toLowerCase()} found in this workspace.</div>
+                ) : (
+                    users.map(user => (
+                        <div key={user._id} className="px-6 py-4 flex flex-col md:flex-row md:items-center justify-between hover:bg-gray-50/80 transition-colors gap-4">
+                            
+                            {/* User Identity Column */}
+                            <div className="flex items-center space-x-4 flex-1">
+                                <div className={`relative h-12 w-12 rounded-full bg-${color}-100 flex items-center justify-center text-${color}-600 font-bold text-lg shadow-sm border border-${color}-200`}>
+                                    {user.name.charAt(0)}
+                                    <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
+                                </div>
+                                <div>
+                                    <p className="font-bold text-gray-900 dark:text-white">{user.name}</p>
+                                    <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">{user.email}</p>
+                                </div>
                             </div>
-                            <div>
-                                <p className="font-semibold text-gray-900 dark:text-white">{user.name}</p>
-                                <p className="text-sm text-gray-500 dark:text-slate-400">{user.email}</p>
-                                <p className="text-xs font-medium text-gray-400 dark:text-slate-500 mt-1 uppercase">{user.department || 'N/A'}</p>
+                            
+                            {/* Meta Data Columns */}
+                            <div className="flex items-center space-x-8 md:space-x-12 flex-1 md:justify-end">
+                                <div className="text-left md:text-right hidden sm:block">
+                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Office</p>
+                                    <p className="text-sm font-semibold text-gray-700 uppercase">{user.department || 'Corporate'}</p>
+                                </div>
+                                <div className="text-left md:text-right hidden sm:block">
+                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">System Role</p>
+                                    <p className="text-sm font-semibold text-gray-700 capitalize">{user.role}</p>
+                                </div>
+                                <div className="text-left md:text-right">
+                                    <button className="text-sm font-bold text-brand-accent hover:text-brand-accent/80 hover:underline px-4 py-2 border border-brand-accent/20 rounded-lg hover:bg-brand-accent/5 transition-colors">
+                                        View Log
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                ))}
+                    ))
+                )}
             </div>
         </div>
     );
 
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors">
-            <Navbar />
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <div className="flex justify-between items-center mb-8">
+        <Layout>
+            <div className="max-w-6xl mx-auto py-8">
+                <div className="flex justify-between items-center mb-8 bg-white p-6 rounded-2xl shadow-sm border border-gray-100 dark:bg-slate-800 dark:border-slate-700">
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">User Directory</h1>
-                        <p className="mt-1 text-sm text-gray-500 dark:text-slate-400">View details of all employees, team leads, and managers.</p>
+                        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Workspace Directory</h1>
+                        <p className="mt-1 text-sm text-gray-500 dark:text-slate-400">View and manage all connected organizational members across departments.</p>
+                    </div>
+                    <div className="flex space-x-3">
+                         <div className="relative">
+                            <input 
+                                type="text" 
+                                placeholder="Search peers..." 
+                                className="pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent shadow-sm"
+                            />
+                            <svg className="w-4 h-4 absolute left-3 top-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                         </div>
                     </div>
                     <button onClick={() => window.history.back()} className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
                         &larr; Back
@@ -85,8 +127,8 @@ const UserDirectory = () => {
                 <UserSection title="Managers" users={managers} color="indigo" />
                 <UserSection title="Team Leads" users={teamLeads} color="purple" />
                 <UserSection title="Employees" users={employees} color="blue" />
-            </div>
         </div>
+        </Layout>
     );
 };
 

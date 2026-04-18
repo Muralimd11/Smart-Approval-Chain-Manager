@@ -19,6 +19,8 @@ import NotFound from './pages/NotFound';
 import Unauthorized from './pages/Unauthorized';
 import UserDirectory from './pages/UserDirectory';
 import ResetSignaturePin from './pages/ResetSignaturePin';
+import Activities from './pages/Activities';
+import Profile from './pages/Profile';
 
 function App() {
   return (
@@ -69,6 +71,22 @@ function App() {
                 element={
                   <PrivateRoute>
                     <UserDirectory />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/activities"
+                element={
+                  <PrivateRoute>
+                    <Activities />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/profile"
+                element={
+                  <PrivateRoute>
+                    <Profile />
                   </PrivateRoute>
                 }
               />
