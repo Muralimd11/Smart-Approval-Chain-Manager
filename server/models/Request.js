@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const requestSchema = new mongoose.Schema({
   requestType: {
     type: String,
-    enum: ['purchase', 'expense', 'leave'],
+    enum: ['purchase', 'expense', 'leave', 'travel', 'wfh', 'training', 'shift'],
     required: true
   },
   employee: {
@@ -38,6 +38,113 @@ const requestSchema = new mongoose.Schema({
     toDate: Date,
     reason: String,
     numberOfDays: Number
+  },
+
+  // Travel Authorization Fields
+  travelDetails: {
+    travelPurpose: String,
+    destination: {
+      city: String,
+      state: String,
+      country: String
+    },
+    departureDate: Date,
+    returnDate: Date,
+    totalDays: Number,
+    travelMode: String,
+    accommodationRequired: Boolean,
+    hotelBudget: Number,
+    estimatedExpenses: {
+      transportation: Number,
+      accommodation: Number,
+      meals: Number,
+      miscellaneous: Number,
+      total: Number
+    },
+    documentUrl: String, // Maps to itinerary/estimates
+    clientName: String,
+    projectCode: String,
+    advanceRequired: Boolean,
+    advanceAmount: Number
+  },
+
+  // Work From Home (WFH) Fields
+  wfhDetails: {
+    fromDate: Date,
+    toDate: Date,
+    totalDays: Number,
+    wfhType: String,
+    frequency: String,
+    reasonCategory: String,
+    detailedReason: String,
+    tasksPlanned: String, // Stringified list
+    availableHours: {
+      from: String,
+      to: String
+    },
+    contactNumber: String,
+    emergencyContact: String,
+    hasRequiredEquipment: Boolean,
+    internetSpeed: String,
+    scheduledMeetings: String // Stringified list
+  },
+
+  // Training Request Fields
+  trainingDetails: {
+    courseName: String,
+    provider: String,
+    courseType: String,
+    startDate: Date,
+    endDate: Date,
+    totalDuration: String,
+    classSchedule: String,
+    hoursPerWeek: Number,
+    courseFee: Number,
+    examFee: Number,
+    materialsCost: Number,
+    travelCost: Number,
+    totalCost: Number,
+    relevanceToRole: String,
+    skillsToGain: String,
+    careerGoals: String,
+    benefitToCompany: String,
+    applicableProjects: String,
+    documentUrl: String, // Maps to brochure
+    completionCommitment: String,
+    postTrainingService: String,
+    certificationIncluded: Boolean,
+    certificationValidity: String
+  },
+
+  // Shift Change Request Fields
+  shiftDetails: {
+    currentShift: {
+      shiftType: String,
+      startTime: String,
+      endTime: String
+    },
+    requestedShift: {
+      shiftType: String,
+      startTime: String,
+      endTime: String
+    },
+    changeType: String,
+    temporaryDuration: String,
+    effectiveFrom: Date,
+    reasonCategory: String,
+    detailedReason: String,
+    circumstanceDetails: {
+      medicalCondition: String,
+      childcareNeeds: String,
+      educationSchedule: String,
+      transportationIssues: String
+    },
+    documentUrl: String, // Maps to medical/supporting docs
+    impactOnTeam: String,
+    mitigationPlan: String,
+    willingToHandover: Boolean,
+    handoverPlan: String,
+    alternativesSuggested: String
   },
   
   // Approval tracking

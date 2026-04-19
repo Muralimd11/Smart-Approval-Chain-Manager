@@ -4,7 +4,7 @@
 
 body {
   margin: 0;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   @apply bg-brand-bg text-brand-text transition-colors duration-200;
@@ -39,10 +39,10 @@ code {
 
 @layer utilities {
   .glass {
-    @apply bg-white/90 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 shadow-sm;
+    @apply bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 shadow-sm transition-all duration-300 rounded-2xl;
   }
   .glass-card {
-    @apply bg-brand-card dark:bg-slate-800 border border-gray-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all duration-300;
+    @apply bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all duration-300 rounded-2xl;
   }
   .animate-fade-in-up {
     animation: fadeInUp 0.5s ease-out forwards;

@@ -11,13 +11,6 @@ const PurchaseRequestForm = ({ onSuccess }) => {
     const [file, setFile] = useState(null);
     const [loading, setLoading] = useState(false);
 
-    const handleChange = (e) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value
-        });
-    };
-
     const handleFileChange = (e) => {
         setFile(e.target.files[0]);
     };
@@ -112,9 +105,9 @@ const PurchaseRequestForm = ({ onSuccess }) => {
             <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50"
+                className="w-full bg-emerald-500 text-white font-bold py-3 px-4 rounded-xl hover:bg-emerald-600 transition-all shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50 mt-6"
             >
-                {loading ? 'Submitting...' : 'Submit Purchase Request'}
+                {loading ? 'Processing...' : 'Continue'}
             </button>
         </form>
     );

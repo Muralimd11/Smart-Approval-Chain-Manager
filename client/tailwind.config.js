@@ -7,7 +7,7 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['"DM Sans"', 'sans-serif'],
+        sans: ['"Segoe UI"', 'system-ui', '-apple-system', 'sans-serif'],
       },
       colors: {
         brand: {
@@ -16,7 +16,7 @@ module.exports = {
           card: '#FFFFFF',
           text: '#2D3748', // soft dark gray for headers
           muted: '#A0AEC0', // for subtext
-          accent: '#2B6CB0', // professional blue
+          accent: '#10b981', // emerald-500 matching Smart login theme
         },
         primary: {
           50: '#eff6ff',

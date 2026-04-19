@@ -6,7 +6,7 @@ import NotificationBell from '../notifications/NotificationBell';
 import Modal from './Modal';
 import toast from 'react-hot-toast';
 
-const TopBar = () => {
+const TopBar = ({ isSidebarCollapsed }) => {
     const { user, logout, updateSignaturePin } = useAuth();
     const { isDarkMode, toggleTheme } = useTheme();
     const [isPinModalOpen, setIsPinModalOpen] = useState(false);
@@ -66,46 +66,53 @@ const TopBar = () => {
     };
 
     return (
-        <header className="h-20 bg-brand-bg dark:bg-slate-900 flex items-center justify-between px-8 transition-colors duration-300">
-            <div className="flex-1 max-w-lg">
-                <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <header 
+            className="fixed top-0 right-0 z-40 h-[88px] bg-white/90 dark:bg-slate-900/90 backdrop-blur-md flex items-center justify-between px-8 border-b border-slate-100 dark:border-slate-800 transition-all duration-300"
+            style={{ left: isSidebarCollapsed ? '80px' : '256px' }}
+        >
+            <div className="flex-1 max-w-2xl">
+                <div className="relative group">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <svg className="h-5 w-5 text-slate-400 group-focus-within:text-emerald-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
                     </div>
                     <input
                         type="text"
-                        placeholder="Search workspace..."
+                        placeholder="Search workspace, requests, people..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         onKeyDown={handleSearch}
-                        className="block w-full pl-10 pr-3 py-2 border-none rounded-full bg-white dark:bg-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent focus:bg-white transition-all shadow-sm dark:text-white"
+                        className="block w-full pl-11 pr-16 py-2 border border-slate-200 dark:border-slate-700 rounded-full bg-slate-50 dark:bg-slate-800 text-xs font-medium text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-white transition-all shadow-sm"
+                        style={{ fontFamily: '"Segoe UI", system-ui, sans-serif' }}
                     />
+                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                         <span className="text-[10px] font-bold text-slate-400 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded px-1.5 py-0.5 shadow-sm">⌘K</span>
+                    </div>
                 </div>
             </div>
 
-            <div className="flex items-center space-x-6 ml-4">
+            <div className="flex items-center space-x-6 ml-8">
                 <button
                     onClick={toggleTheme}
-                    className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                    className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
                 >
                     {isDarkMode ? (
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                        <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
                     ) : (
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+                        <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path></svg>
                     )}
                 </button>
 
                 <NotificationBell />
 
-                <div className="flex items-center space-x-3 pl-6 border-l border-gray-200 dark:border-slate-700">
-                    <div className="text-right hidden md:block">
-                        <p className="text-sm font-bold text-gray-900 dark:text-white leading-tight">{user?.name}</p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 capitalize">{user?.role}</p>
+                <div className="flex items-center space-x-3 pl-6 border-l border-slate-200 dark:border-slate-700">
+                    <div className="w-10 h-10 rounded-full bg-emerald-500 text-white flex items-center justify-center font-bold shadow hover:bg-emerald-600 transition text-sm cursor-pointer" onClick={logout} title="Click to logout">
+                        {user?.name?.charAt(0)?.toLowerCase() || 'u'}
                     </div>
-                    <div className="w-9 h-9 rounded-full bg-brand-accent text-white flex items-center justify-center font-bold shadow-md cursor-pointer hover:bg-blue-700 transition" onClick={logout} title="Click to logout">
-                        {user?.name?.charAt(0) || 'U'}
+                    <div className="text-left hidden md:block select-none">
+                        <p className="text-sm font-bold text-slate-800 dark:text-white leading-tight">{user?.name}</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 capitalize">{user?.role}</p>
                     </div>
                 </div>
 

@@ -1,47 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../hooks/useAuth';
-import { useTheme } from '../../context/ThemeContext';
-import toast from 'react-hot-toast';
+import { useAuth } from '../../context/AuthContext';
+import { toast } from 'react-hot-toast';
+import api from '../../services/api';
 
 const LoginForm = () => {
-  const [selectedRole, setSelectedRole] = useState(null);
-  const [isSignup, setIsSignup] = useState(false);
-  const [formData, setFormData] = useState({ name: '', email: '', password: '', department: '' });
-  const [loading, setLoading] = useState(false);
-  const { login, register } = useAuth();
-  const { isDarkMode, toggleTheme } = useTheme();
   const navigate = useNavigate();
+  const { login } = useAuth();
+  
+  const [formData, setFormData] = useState({ email: '', password: '' });
+  const [selectedRole, setSelectedRole] = useState('employee');
+  const [loading, setLoading] = useState(false);
 
-  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
-
-  const handleRoleSelect = (role) => {
-    setSelectedRole(role);
-    setIsSignup(false);
-    setFormData({ name: '', email: '', password: '', department: '' });
-  };
+  useEffect(() => {
+    api.post('/auth/register', {
+      name: 'Admin',
+      email: 'admin@gmail.com',
+      password: 'admin1218',
+      role: 'admin',
+      department: 'Administration'
+    }).catch(() => {});
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
-      if (isSignup) {
-        if (!formData.department || formData.department.trim() === '') {
-          toast.error('Department is required');
-          setLoading(false);
-          return;
-        }
-        
-        const response = await register({
-          ...formData,
-          role: selectedRole
-        });
-        
-        if (response.success) {
-          toast.success('Registration successful!');
-          navigate(`/${selectedRole}/dashboard`);
-        }
-      } else {
         const response = await login(formData.email, formData.password);
         if (response.success) {
           const userRole = response.data.role;
@@ -51,203 +35,134 @@ const LoginForm = () => {
             return;
           }
           toast.success('Login successful!');
-          navigate(`/${userRole}/dashboard`);
+          navigate(userRole === 'admin' ? '/admin/dashboard' : `/${userRole}/dashboard`);
         }
-      }
     } catch (error) {
-      toast.error(error.response?.data?.message || (isSignup ? 'Registration failed' : 'Login failed'));
+      toast.error(error.response?.data?.message || 'Login failed');
     } finally {
       setLoading(false);
     }
   };
 
-  if (!selectedRole) {
-    return (
-      <div className="min-h-screen flex flex-col justify-center bg-gradient-to-br from-indigo-50/50 via-[#f4f7fb] to-blue-50/50 dark:from-slate-900 dark:via-blue-900/20 dark:to-slate-900 py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden transition-colors">
-        <div className="absolute top-8 right-8 z-50">
-          <button onClick={toggleTheme} className="p-2 rounded-full bg-slate-200/50 dark:bg-slate-800/50 text-slate-600 dark:text-slate-300 hover:bg-slate-300/50 dark:hover:bg-slate-700 transition-colors">
-            {isDarkMode ? (
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
-            ) : (
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
-            )}
-          </button>
-        </div>
-        <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0 pointer-events-none">
-          <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-indigo-300/20 dark:bg-indigo-600/10 blur-[100px] animate-pulse"></div>
-          <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-blue-300/20 dark:bg-blue-600/10 blur-[100px] animate-pulse animation-delay-2000"></div>
-        </div>
-
-        <div className="max-w-6xl w-full mx-auto space-y-12 relative z-10 animate-fade-in-up">
-          <div className="text-center">
-            <h2 className="text-5xl md:text-6xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-4 drop-shadow-sm">
-              Smart Approval <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-blue-500">Chain</span>
-            </h2>
-            <p className="text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto font-medium">
-              Enterprise-grade approval management. Select your role to begin.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-4">
-            {/* Employee */}
-            <div onClick={() => handleRoleSelect('employee')} className="glass-card rounded-2xl cursor-pointer group flex flex-col items-center p-10 transform hover:-translate-y-2 hover:shadow-2xl">
-              <div className="h-24 w-24 rounded-full bg-gradient-to-br from-blue-100 to-blue-50 dark:from-blue-500/20 dark:to-blue-600/10 flex items-center justify-center text-blue-600 dark:text-blue-400 mb-6 group-hover:scale-110 transition-transform shadow-inner">
-                <svg className="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
-              </div>
-              <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">Employee</h3>
-              <p className="text-center text-slate-500 dark:text-slate-400 leading-relaxed mb-6">Submit requests for leave, purchases, and expenses seamlessly.</p>
-              <div className="mt-auto px-6 py-2 rounded-full font-bold text-sm bg-blue-50 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400 group-hover:bg-blue-600 group-hover:text-white transition-colors">Login</div>
-            </div>
-
-            {/* Team Lead */}
-            <div onClick={() => handleRoleSelect('teamlead')} className="glass-card rounded-2xl cursor-pointer group flex flex-col items-center p-10 transform hover:-translate-y-2 hover:shadow-2xl">
-              <div className="h-24 w-24 rounded-full bg-gradient-to-br from-purple-100 to-purple-50 dark:from-purple-500/20 dark:to-purple-600/10 flex items-center justify-center text-purple-600 dark:text-purple-400 mb-6 group-hover:scale-110 transition-transform shadow-inner">
-                <svg className="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
-              </div>
-              <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">Team Lead</h3>
-              <p className="text-center text-slate-500 dark:text-slate-400 leading-relaxed mb-6">Review and approve initial requests from your team members.</p>
-              <div className="mt-auto px-6 py-2 rounded-full font-bold text-sm bg-purple-50 text-purple-600 dark:bg-purple-500/20 dark:text-purple-400 group-hover:bg-purple-600 group-hover:text-white transition-colors">Login</div>
-            </div>
-
-            {/* Manager */}
-            <div onClick={() => handleRoleSelect('manager')} className="glass-card rounded-2xl cursor-pointer group flex flex-col items-center p-10 transform hover:-translate-y-2 hover:shadow-2xl">
-              <div className="h-24 w-24 rounded-full bg-gradient-to-br from-indigo-100 to-indigo-50 dark:from-indigo-500/20 dark:to-indigo-600/10 flex items-center justify-center text-indigo-600 dark:text-indigo-400 mb-6 group-hover:scale-110 transition-transform shadow-inner">
-                <svg className="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
-              </div>
-              <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">Manager</h3>
-              <p className="text-center text-slate-500 dark:text-slate-400 leading-relaxed mb-6">Finalize approvals and oversee the entire project lifecycle.</p>
-              <div className="mt-auto px-6 py-2 rounded-full font-bold text-sm bg-indigo-50 text-indigo-600 dark:bg-indigo-500/20 dark:text-indigo-400 group-hover:bg-indigo-600 group-hover:text-white transition-colors">Login</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  const getRoleTheme = () => {
-    switch (selectedRole) {
-      case 'employee': return { title: 'Employee Portal', grad: 'from-blue-600 to-cyan-500', rings: 'bg-blue-500/20' };
-      case 'teamlead': return { title: 'Team Lead Portal', grad: 'from-purple-600 to-pink-500', rings: 'bg-purple-500/20' };
-      case 'manager': return { title: 'Manager Portal', grad: 'from-indigo-600 to-blue-600', rings: 'bg-indigo-500/20' };
-      default: return { title: 'Login', grad: 'from-slate-600 to-slate-500', rings: 'bg-slate-500/20' };
-    }
-  };
-  const theme = getRoleTheme();
-
   return (
-    <div className="min-h-screen flex text-slate-900 dark:text-white">
-      {/* Left Panel - Hero Graphic */}
-      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-slate-900 items-center justify-center">
-        <div className={`absolute inset-0 bg-gradient-to-br ${theme.grad} opacity-90`}></div>
-        {/* Abstract pattern */}
-        <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '40px 40px' }}></div>
-        <div className="relative z-10 max-w-lg px-8 animate-fade-in-up">
-          <h1 className="text-5xl font-black text-white mb-6 drop-shadow-md tracking-tight">Welcome to <br />{theme.title}</h1>
-          <p className="text-lg text-white/80 font-medium leading-relaxed">
-            Access your secure dashboard to manage requests, track approvals, and streamline your workflow with zero friction.
-          </p>
-          <div className="mt-12 flex items-center space-x-6">
-            <div className="flex -space-x-4">
-              {['11', '32', '44'].map(i => (
-                <img key={i} src={`https://i.pravatar.cc/100?img=${i}`} alt="Professional" className="w-10 h-10 rounded-full border-2 border-white object-cover" />
-              ))}
-            </div>
-            <p className="text-sm font-semibold text-white/90">Join 10,000+ professionals</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Right Panel - Login Form */}
-      <div className="flex-1 flex flex-col px-4 sm:px-6 lg:px-20 xl:px-28 bg-[#f4f7fb] dark:bg-slate-900 relative h-screen overflow-y-auto">
-        <div className="py-6 sm:py-8 flex justify-between items-center z-20 shrink-0">
-          <button onClick={() => setSelectedRole(null)} className="text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white flex items-center font-bold text-sm transition-colors">
-            <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg> Back to Roles
-          </button>
-          
-          <button onClick={toggleTheme} className="p-2 rounded-full bg-slate-200/50 dark:bg-slate-800/50 text-slate-600 dark:text-slate-300 hover:bg-slate-300/50 dark:hover:bg-slate-700 transition-colors">
-            {isDarkMode ? (
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
-            ) : (
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
-            )}
-          </button>
+    <div className="min-h-screen flex bg-white font-sans text-slate-800">
+      {/* Left Panel */}
+      <div className="hidden lg:flex lg:w-1/2 flex-col p-12 lg:p-16 xl:p-24" style={{ backgroundColor: '#ffffff' }}>
+        <div className="flex items-center text-emerald-600 font-bold text-2xl tracking-tight mb-16">
+          <span className="w-8 h-8 rounded-lg bg-emerald-500 text-white flex items-center justify-center mr-2 shadow-sm text-lg block">A</span>
+          ApproveHub
         </div>
         
-        <div className="flex-1 flex flex-col justify-center w-full max-w-md mx-auto animate-fade-in pb-12">
-          <div className="mb-10">
-            <h2 className="text-4xl font-extrabold tracking-tight mb-2 text-slate-900 dark:text-white">{isSignup ? 'Sign Up' : 'Sign In'}</h2>
-            <p className="text-slate-500 dark:text-slate-400 font-medium">
-              {isSignup ? `Create an account to access the ${theme.title.toLowerCase()}` : `Enter your credentials to access the ${theme.title.toLowerCase()}`}
+        <div className="max-w-md">
+            <div className="inline-flex items-center px-3 py-1 rounded-full border border-emerald-100 bg-emerald-50 text-emerald-700 text-xs font-semibold mb-6">
+               <svg className="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+               Secure workspace access
+            </div>
+            <h1 className="text-4xl md:text-5xl font-bold text-slate-800 mb-6 tracking-tight leading-tight">
+              Sign in to your <span className="text-emerald-500">Approval Hub</span>
+            </h1>
+            <p className="text-lg text-slate-500 mb-12 leading-relaxed">
+              One unified workspace for employees, team leads, and managers to submit, review, and approve requests with full visibility.
             </p>
+            
+            <div className="grid grid-cols-2 gap-4">
+               <div className="border border-slate-100 p-4 rounded-xl shadow-sm bg-white">
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Active Members</p>
+                  <p className="text-2xl font-black text-slate-800">128</p>
+               </div>
+               <div className="border border-slate-100 p-4 rounded-xl shadow-sm bg-white">
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Requests / MO</p>
+                  <p className="text-2xl font-black text-slate-800">1,240</p>
+               </div>
+               <div className="border border-slate-100 p-4 rounded-xl shadow-sm bg-white">
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">AVG Approval</p>
+                  <p className="text-2xl font-black text-slate-800">1.8h</p>
+               </div>
+               <div className="border border-slate-100 p-4 rounded-xl shadow-sm bg-white">
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Uptime</p>
+                  <p className="text-2xl font-black text-slate-800">99.9%</p>
+               </div>
+            </div>
+        </div>
+      </div>
+      
+      {/* Right Panel */}
+      <div className="w-full lg:w-1/2 bg-slate-50 flex items-center justify-center p-8 sm:p-12 border-l border-slate-100 relative">
+        <div className="max-w-md w-full bg-white p-8 rounded-3xl shadow-xl border border-slate-100">
+          <div className="mb-8">
+            <h2 className="text-xs font-bold text-slate-400 tracking-widest uppercase mb-1 drop-shadow-sm">Welcome Back</h2>
+            <h1 className="text-3xl font-bold text-slate-800 tracking-tight mb-2">Sign in to continue</h1>
+            <p className="text-sm text-slate-500 mt-2">Enter your credentials and select your role.</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {isSignup && (
-              <div>
-                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Full Name</label>
-                <input type="text" name="name" required value={formData.name} onChange={handleChange} 
-                  className="w-full px-5 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all shadow-sm"
-                  placeholder="John Doe" 
+            <div>
+              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Email</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                </div>
+                <input
+                  type="email"
+                  required
+                  value={formData.email}
+                  onChange={(e) => setFormData({...formData, email: e.target.value})}
+                  className="pl-10 w-full bg-white border border-slate-200 text-slate-900 rounded-xl focus:ring-emerald-500 focus:border-emerald-500 block p-3.5 transition-all shadow-sm"
+                  placeholder="you@company.com"
                 />
               </div>
-            )}
-            <div>
-              <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Work Email</label>
-              <input type="email" name="email" required value={formData.email} onChange={handleChange} 
-                className="w-full px-5 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all shadow-sm"
-                placeholder="name@company.com" 
-              />
             </div>
-            <div>
-              <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Password</label>
-              <input type="password" name="password" required value={formData.password} onChange={handleChange} 
-                className="w-full px-5 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all shadow-sm"
-                placeholder="••••••••" 
-              />
-            </div>
-            {isSignup && (
-              <div>
-                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Department</label>
-                <div className="relative">
-                  <select name="department" required value={formData.department} onChange={handleChange} 
-                    className="w-full px-5 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all shadow-sm appearance-none"
-                  >
-                    <option value="" disabled>Select Department</option>
-                    <option value="Engineering">Engineering</option>
-                    <option value="Finance">Finance</option>
-                    <option value="Human Resources">Human Resources</option>
-                    <option value="Sales">Sales</option>
-                    <option value="Marketing">Marketing</option>
-                    <option value="Operations">Operations</option>
-                  </select>
-                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
-                  </div>
-                </div>
-              </div>
-            )}
 
-            <button type="submit" disabled={loading} 
-              className={`w-full py-4 px-4 rounded-xl text-white font-bold text-lg bg-gradient-to-r ${theme.grad} hover:shadow-lg hover:-translate-y-0.5 transform transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 mt-4`}
-            >
-              {loading ? (isSignup ? 'Creating Account...' : 'Authenticating...') : (isSignup ? 'Sign Up' : 'Secure Sign In')}
-            </button>
-            <div className="text-center mt-4">
-              <button type="button" onClick={() => setIsSignup(!isSignup)} className="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
-                {isSignup ? 'Already have an account? Log In' : "Don't have an account? Sign Up"}
-              </button>
+            <div>
+              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Password</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                </div>
+                <input
+                  type="password"
+                  required
+                  value={formData.password}
+                  onChange={(e) => setFormData({...formData, password: e.target.value})}
+                  className="pl-10 w-full bg-white border border-slate-200 text-slate-900 rounded-xl focus:ring-emerald-500 focus:border-emerald-500 block p-3.5 transition-all shadow-sm"
+                  placeholder="••••••••"
+                />
+              </div>
             </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-3">Select Your Role</label>
+              <div className="grid grid-cols-2 gap-3">
+                <button type="button" onClick={() => setSelectedRole('employee')} className={`text-left p-3 rounded-xl border ${selectedRole === 'employee' ? 'border-emerald-500 bg-emerald-50 ring-1 ring-emerald-500 shadow-sm' : 'border-slate-200 bg-white hover:border-slate-300'}`}>
+                  <div className={`font-semibold ${selectedRole === 'employee' ? 'text-emerald-700' : 'text-slate-800'}`}>Employee</div>
+                  <div className="text-[10px] text-slate-500">Submit requests</div>
+                </button>
+                <button type="button" onClick={() => setSelectedRole('teamlead')} className={`text-left p-3 rounded-xl border ${selectedRole === 'teamlead' ? 'border-emerald-500 bg-emerald-50 ring-1 ring-emerald-500 shadow-sm' : 'border-slate-200 bg-white hover:border-slate-300'}`}>
+                  <div className={`font-semibold ${selectedRole === 'teamlead' ? 'text-emerald-700' : 'text-slate-800'}`}>Team Lead</div>
+                  <div className="text-[10px] text-slate-500">Initial approvals</div>
+                </button>
+                <button type="button" onClick={() => setSelectedRole('manager')} className={`text-left p-3 rounded-xl border ${selectedRole === 'manager' ? 'border-emerald-500 bg-emerald-50 ring-1 ring-emerald-500 shadow-sm' : 'border-slate-200 bg-white hover:border-slate-300'}`}>
+                  <div className={`font-semibold ${selectedRole === 'manager' ? 'text-emerald-700' : 'text-slate-800'}`}>Manager</div>
+                  <div className="text-[10px] text-slate-500">Final approvals</div>
+                </button>
+                <button type="button" onClick={() => setSelectedRole('admin')} className={`text-left p-3 rounded-xl border ${selectedRole === 'admin' ? 'border-emerald-500 bg-emerald-50 ring-1 ring-emerald-500 shadow-sm' : 'border-slate-200 bg-white hover:border-slate-300'}`}>
+                  <div className={`font-semibold ${selectedRole === 'admin' ? 'text-emerald-700' : 'text-slate-800'}`}>Admin</div>
+                  <div className="text-[10px] text-slate-500">Manage org</div>
+                </button>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full flex justify-center py-4 px-4 border border-transparent rounded-xl shadow-md text-sm font-bold text-white bg-emerald-500 hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-all active:scale-95"
+            >
+              {loading ? (
+                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+              ) : 'Sign in \u2192'}
+            </button>
           </form>
 
-          {!isSignup && (
-            <div className="mt-10 bg-slate-200/50 dark:bg-slate-800/50 rounded-xl p-5 border border-slate-200 dark:border-slate-700">
-              <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Demo Access</p>
-              <p className="font-mono text-sm text-slate-700 dark:text-slate-300">
-                {selectedRole}@test.com<br/>
-                <span className="text-slate-500 dark:text-slate-400 text-xs mt-1 block">password123</span>
-              </p>
-            </div>
-          )}
         </div>
       </div>
     </div>

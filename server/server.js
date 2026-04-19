@@ -4,6 +4,7 @@ const cors = require('cors');
 const http = require('http');
 const path = require('path');
 const connectDB = require('./config/db');
+const User = require('./models/User'); // For initialization flow
 const { initializeSocket } = require('./config/socket');
 const socketHandlers = require('./socket/socketHandlers');
 const errorHandler = require('./middleware/errorHandler');
@@ -12,7 +13,23 @@ const errorHandler = require('./middleware/errorHandler');
 dotenv.config();
 
 // Connect to database
-connectDB();
+connectDB().then(async () => {
+    try {
+        const adminExists = await User.findOne({ email: 'admin@gmail.com' });
+        if (!adminExists) {
+            await User.create({
+                name: 'Admin',
+                email: 'admin@gmail.com',
+                password: 'admin1218',
+                role: 'admin',
+                department: 'Administration'
+            });
+            console.log('Seeded default admin account (admin@gmail.com)');
+        }
+    } catch (error) {
+        console.error('Failed to seed admin account:', error.message);
+    }
+});
 
 const app = express();
 const server = http.createServer(app);

@@ -27,9 +27,12 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      sessionStorage.removeItem('token');
-      sessionStorage.removeItem('user');
-      window.location.href = '/login';
+      const isAuthEndpoint = error.config && (error.config.url.includes('/auth/login') || error.config.url.includes('/auth/register'));
+      if (!isAuthEndpoint) {
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('user');
+        window.location.href = '/login';
+      }
     }
     return Promise.reject(error);
   }

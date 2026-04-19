@@ -104,6 +104,64 @@ exports.createRequest = async (req, res) => {
       }
     }
 
+    // Handle Travel Authorization
+    if (requestType === 'travel') {
+      const { travelDetails } = req.body;
+      let parsedDetails = typeof travelDetails === 'string' ? JSON.parse(travelDetails) : travelDetails;
+
+      if (req.file) {
+        const uploadResult = await cloudinaryService.uploadPDF(
+          req.file.buffer,
+          'travel-documents',
+          req.file.originalname
+        );
+        parsedDetails.documentUrl = uploadResult.url;
+      }
+
+      requestData.travelDetails = parsedDetails;
+    }
+
+    // Handle WFH Request
+    if (requestType === 'wfh') {
+      const { wfhDetails } = req.body;
+      let parsedDetails = typeof wfhDetails === 'string' ? JSON.parse(wfhDetails) : wfhDetails;
+      requestData.wfhDetails = parsedDetails;
+    }
+
+    // Handle Training Request
+    if (requestType === 'training') {
+      const { trainingDetails } = req.body;
+      let parsedDetails = typeof trainingDetails === 'string' ? JSON.parse(trainingDetails) : trainingDetails;
+
+      if (req.file) {
+        const uploadResult = await cloudinaryService.uploadPDF(
+          req.file.buffer,
+          'training-brochures',
+          req.file.originalname
+        );
+        parsedDetails.documentUrl = uploadResult.url;
+      }
+
+      requestData.trainingDetails = parsedDetails;
+    }
+
+    // Handle Shift Change Request
+    if (requestType === 'shift') {
+      const { shiftDetails } = req.body;
+      let parsedDetails = typeof shiftDetails === 'string' ? JSON.parse(shiftDetails) : shiftDetails;
+
+      if (req.file) {
+        const uploadResult = await cloudinaryService.uploadPDF(
+          req.file.buffer,
+          'shift-documents',
+          req.file.originalname
+        );
+        parsedDetails.documentUrl = uploadResult.url;
+      }
+
+      requestData.shiftDetails = parsedDetails;
+    }
+
     // Create request
     const request = await Request.create(requestData);
     await request.populate('employee', 'name email department');

@@ -21,6 +21,8 @@ import UserDirectory from './pages/UserDirectory';
 import ResetSignaturePin from './pages/ResetSignaturePin';
 import Activities from './pages/Activities';
 import Profile from './pages/Profile';
+import AdminDashboard from './pages/AdminDashboard';
+import MyCalendar from './pages/MyCalendar';
 
 function App() {
   return (
@@ -67,6 +69,17 @@ function App() {
               />
 
               <Route
+                path="/admin/dashboard"
+                element={
+                  <PrivateRoute>
+                    <RoleBasedRoute allowedRoles={['admin']}>
+                      <AdminDashboard />
+                    </RoleBasedRoute>
+                  </PrivateRoute>
+                }
+              />
+
+              <Route
                 path="/users"
                 element={
                   <PrivateRoute>
@@ -87,6 +100,14 @@ function App() {
                 element={
                   <PrivateRoute>
                     <Profile />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/calendar"
+                element={
+                  <PrivateRoute>
+                    <MyCalendar />
                   </PrivateRoute>
                 }
               />

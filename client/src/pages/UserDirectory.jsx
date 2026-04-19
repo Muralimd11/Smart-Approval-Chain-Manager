@@ -30,8 +30,8 @@ const UserDirectory = () => {
     const managers = users.filter(u => u.role === 'manager');
 
     const UserSection = ({ title, users, color }) => (
-        <div className="mb-10 bg-white border border-gray-200 dark:border-slate-700/50 rounded-2xl overflow-hidden shadow-sm">
-            <div className={`px-6 py-5 border-b border-gray-100 dark:border-slate-700/50 bg-${color}-50/30 flex items-center justify-between`}>
+        <div className="mb-10 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700/50 rounded-2xl overflow-hidden shadow-sm">
+            <div className={`px-6 py-5 border-b border-gray-100 dark:border-slate-700/50 bg-${color}-50/30 dark:bg-slate-800/80 flex items-center justify-between`}>
                 <div className="flex items-center space-x-3">
                     <div className={`w-2 h-6 bg-${color}-400 rounded-full`}></div>
                     <h3 className={`text-base font-bold text-${color}-900 dark:text-${color}-400 uppercase tracking-widest`}>
@@ -40,7 +40,7 @@ const UserDirectory = () => {
                 </div>
                 <div className="flex items-center space-x-4">
                     <span className="text-xs font-medium text-gray-500">Active Directory Block</span>
-                    <span className="text-xs font-bold text-gray-700 bg-white shadow-sm border border-gray-200 px-3 py-1 rounded-full">{users.length} members</span>
+                    <span className="text-xs font-bold text-gray-700 dark:text-slate-300 bg-white dark:bg-slate-700 shadow-sm border border-gray-200 dark:border-slate-600 px-3 py-1 rounded-full">{users.length} members</span>
                 </div>
             </div>
             
@@ -49,7 +49,7 @@ const UserDirectory = () => {
                     <div className="px-6 py-8 text-center text-sm text-gray-400">No {title.toLowerCase()} found in this workspace.</div>
                 ) : (
                     users.map(user => (
-                        <div key={user._id} className="px-6 py-4 flex flex-col md:flex-row md:items-center justify-between hover:bg-gray-50/80 transition-colors gap-4">
+                        <div key={user._id} className="px-6 py-4 flex flex-col md:flex-row md:items-center justify-between hover:bg-gray-50/80 dark:hover:bg-slate-700/50 transition-colors gap-4">
                             
                             {/* User Identity Column */}
                             <div className="flex items-center space-x-4 flex-1">
@@ -67,11 +67,11 @@ const UserDirectory = () => {
                             <div className="flex items-center space-x-8 md:space-x-12 flex-1 md:justify-end">
                                 <div className="text-left md:text-right hidden sm:block">
                                     <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Office</p>
-                                    <p className="text-sm font-semibold text-gray-700 uppercase">{user.department || 'Corporate'}</p>
+                                    <p className="text-sm font-semibold text-gray-700 dark:text-slate-300 uppercase">{user.department || 'Corporate'}</p>
                                 </div>
                                 <div className="text-left md:text-right hidden sm:block">
                                     <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">System Role</p>
-                                    <p className="text-sm font-semibold text-gray-700 capitalize">{user.role}</p>
+                                    <p className="text-sm font-semibold text-gray-700 dark:text-slate-300 capitalize">{user.role}</p>
                                 </div>
                                 <div className="text-left md:text-right">
                                     <button className="text-sm font-bold text-brand-accent hover:text-brand-accent/80 hover:underline px-4 py-2 border border-brand-accent/20 rounded-lg hover:bg-brand-accent/5 transition-colors">
@@ -91,7 +91,7 @@ const UserDirectory = () => {
             <div className="max-w-6xl mx-auto py-8">
                 <div className="flex justify-between items-center mb-8 bg-white p-6 rounded-2xl shadow-sm border border-gray-100 dark:bg-slate-800 dark:border-slate-700">
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Workspace Directory</h1>
+                        <h1 className="font-sans font-semibold text-3xl sm:text-4xl tracking-tight text-slate-800 dark:text-slate-100">Workspace Directory</h1>
                         <p className="mt-1 text-sm text-gray-500 dark:text-slate-400">View and manage all connected organizational members across departments.</p>
                     </div>
                     <div className="flex space-x-3">

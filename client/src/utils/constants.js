@@ -4,7 +4,11 @@ export const SOCKET_URL = process.env.REACT_APP_SOCKET_URL || 'http://localhost:
 export const REQUEST_TYPES = {
   PURCHASE: 'purchase',
   EXPENSE: 'expense',
-  LEAVE: 'leave'
+  LEAVE: 'leave',
+  TRAVEL: 'travel',
+  WFH: 'wfh',
+  TRAINING: 'training',
+  SHIFT: 'shift'
 };
 
 export const REQUEST_STATUS = {
@@ -23,7 +27,11 @@ export const USER_ROLES = {
 export const REQUEST_TYPE_LABELS = {
   purchase: 'Purchase Request',
   expense: 'Expense Reimbursement',
-  leave: 'Leave Request'
+  leave: 'Leave Request',
+  travel: 'Travel Authorization',
+  wfh: 'WFH Authorization',
+  training: 'Training Enrollment',
+  shift: 'Shift Modification'
 };
 
 export const STATUS_LABELS = {

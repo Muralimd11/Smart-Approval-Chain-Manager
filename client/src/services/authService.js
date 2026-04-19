@@ -58,6 +58,16 @@ export const authService = {
     return response.data;
   },
 
+  updatePassword: async (passwordData) => {
+    const response = await api.put('/auth/update-password', passwordData);
+    return response.data;
+  },
+
+  adminCreateUser: async (userData) => {
+    const response = await api.post('/auth/admin/users', userData);
+    return response.data;
+  },
+
   isAuthenticated: () => {
     return !!sessionStorage.getItem('token');
   },

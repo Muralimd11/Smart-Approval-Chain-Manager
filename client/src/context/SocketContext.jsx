@@ -37,12 +37,6 @@ export const SocketProvider = ({ children }) => {
         setSocket(null);
         setConnected(false);
       };
-    } else {
-      if (socket) {
-        socket.close();
-        setSocket(null);
-        setConnected(false);
-      }
     }
   }, [isAuthenticated, user]);
 

@@ -9,6 +9,8 @@ const Profile = () => {
     const [teamLeads, setTeamLeads] = useState([]);
     const [managers, setManagers] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [passwordData, setPasswordData] = useState({ currentPassword: '', newPassword: '' });
+    const [updatingParams, setUpdatingParams] = useState(false);
 
     useEffect(() => {
         const fetchHierarchy = async () => {
@@ -38,11 +40,33 @@ const Profile = () => {
         fetchHierarchy();
     }, [user]);
 
-    const ProfileCard = ({ title, person, iconColor = "blue" }) => (
+    const handlePasswordUpdate = async (e) => {
+        e.preventDefault();
+        setUpdatingParams(true);
+        try {
+            await authService.updatePassword(passwordData);
+            import('react-hot-toast').then(({ default: toast }) => toast.success('Password updated securely!'));
+            setPasswordData({ currentPassword: '', newPassword: '' });
+        } catch (error) {
+            import('react-hot-toast').then(({ default: toast }) => toast.error(error.response?.data?.message || 'Failed to update password'));
+        } finally {
+            setUpdatingParams(false);
+        }
+    };
+
+    const ProfileCard = ({ title, person, iconColor = "blue" }) => {
+        const colorMap = {
+            blue: { bg: 'bg-blue-50 dark:bg-blue-500/20', text: 'text-blue-600 dark:text-blue-400' },
+            amber: { bg: 'bg-amber-50 dark:bg-amber-500/20', text: 'text-amber-600 dark:text-amber-400' },
+            indigo: { bg: 'bg-indigo-50 dark:bg-indigo-500/20', text: 'text-indigo-600 dark:text-indigo-400' }
+        };
+        const colors = colorMap[iconColor] || colorMap.blue;
+        
+        return (
         <div className="flex items-center justify-between p-4 bg-gray-50/50 dark:bg-slate-800/50 border border-gray-100 dark:border-slate-700/50 rounded-xl hover:bg-white transition-colors">
             {person ? (
                 <div className="flex items-center space-x-4">
-                    <div className={`h-10 w-10 rounded-full bg-${iconColor}-50 dark:bg-${iconColor}-500/20 flex items-center justify-center text-${iconColor}-600 dark:text-${iconColor}-400 font-bold shadow-sm`}>
+                    <div className={`h-10 w-10 rounded-full ${colors.bg} flex items-center justify-center ${colors.text} font-bold shadow-sm`}>
                         {person.name?.charAt(0) || '?'}
                     </div>
                     <div>
@@ -61,12 +85,13 @@ const Profile = () => {
             </div>
         </div>
     );
+    };
 
     return (
         <Layout>
             <div className="max-w-6xl mx-auto py-8">
                 <div className="mb-8 bg-white p-6 rounded-2xl shadow-sm border border-gray-100 dark:bg-slate-800 dark:border-slate-700">
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Account Profile</h1>
+                    <h1 className="font-sans font-semibold text-3xl sm:text-4xl tracking-tight text-slate-800 dark:text-slate-100">Account Profile</h1>
                     <p className="mt-1 text-sm text-gray-500 dark:text-slate-400">Manage your identity, settings, and view your department hierarchy.</p>
                 </div>
 
@@ -122,27 +147,44 @@ const Profile = () => {
                                 <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-6">System Preferences</h3>
                                 
                                 <div className="space-y-6">
-                                    <div className="flex justify-between items-center pb-4 border-b border-gray-50">
+                                    <div className="flex justify-between items-center pb-4 border-b border-gray-50 dark:border-slate-700/50">
                                         <div>
-                                            <p className="font-bold text-gray-900 text-sm">Two-Factor Authentication</p>
-                                            <p className="text-xs text-gray-500 mt-1">Add an extra layer of security to your account.</p>
+                                            <p className="font-bold text-gray-900 dark:text-white text-sm">Two-Factor Authentication</p>
+                                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Add an extra layer of security to your account.</p>
                                         </div>
                                         <span className="px-3 py-1 bg-red-50 text-red-600 text-xs font-bold rounded-full border border-red-100">Disabled</span>
                                     </div>
-                                    <div className="flex justify-between items-center pb-4 border-b border-gray-50">
+                                    <div className="flex justify-between items-center pb-4 border-b border-gray-50 dark:border-slate-700/50">
                                         <div>
-                                            <p className="font-bold text-gray-900 text-sm">Email Notifications</p>
-                                            <p className="text-xs text-gray-500 mt-1">Receive updates for pending requests.</p>
+                                            <p className="font-bold text-gray-900 dark:text-white text-sm">Email Notifications</p>
+                                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Receive updates for pending requests.</p>
                                         </div>
                                         <span className="px-3 py-1 bg-emerald-50 text-emerald-600 text-xs font-bold rounded-full border border-emerald-100">Enabled</span>
                                     </div>
-                                    <div className="flex justify-between items-center pb-4 border-b border-gray-50">
+                                    <div className="flex justify-between items-center pb-4 border-b border-gray-50 dark:border-slate-700/50">
                                         <div>
-                                            <p className="font-bold text-gray-900 text-sm">Timezone Settings</p>
-                                            <p className="text-xs text-gray-500 mt-1">Localize timestamp calculations.</p>
+                                            <p className="font-bold text-gray-900 dark:text-white text-sm">Timezone Settings</p>
+                                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Localize timestamp calculations.</p>
                                         </div>
-                                        <span className="text-xs font-bold text-gray-700 bg-gray-50 px-3 py-1 border border-gray-200 rounded">UTC -5:00</span>
+                                        <span className="text-xs font-bold text-gray-700 dark:text-slate-300 bg-gray-50 dark:bg-slate-700 px-3 py-1 border border-gray-200 dark:border-slate-600 rounded">UTC -5:00</span>
                                     </div>
+                                </div>
+
+                                <div className="mt-8">
+                                    <h3 className="text-sm font-bold text-gray-900 dark:text-white border-b border-gray-50 dark:border-slate-700/50 pb-3 mb-4">Security Access</h3>
+                                    <form onSubmit={handlePasswordUpdate} className="space-y-4">
+                                        <div>
+                                            <label className="block text-xs font-bold text-gray-700 dark:text-slate-300 mb-1">Current Password</label>
+                                            <input type="password" required value={passwordData.currentPassword} onChange={(e) => setPasswordData({...passwordData, currentPassword: e.target.value})} className="w-full px-3 py-2 border rounded-lg text-sm bg-gray-50 dark:bg-slate-900 border-gray-200 dark:border-slate-700 dark:text-white focus:outline-none focus:ring-1 focus:ring-emerald-500" />
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-bold text-gray-700 dark:text-slate-300 mb-1">New System Password</label>
+                                            <input type="password" required minLength="6" value={passwordData.newPassword} onChange={(e) => setPasswordData({...passwordData, newPassword: e.target.value})} className="w-full px-3 py-2 border rounded-lg text-sm bg-gray-50 dark:bg-slate-900 border-gray-200 dark:border-slate-700 dark:text-white focus:outline-none focus:ring-1 focus:ring-emerald-500" />
+                                        </div>
+                                        <button type="submit" disabled={updatingParams || !passwordData.currentPassword || !passwordData.newPassword} className="px-4 py-2 bg-slate-900 text-white rounded-lg text-sm font-bold disabled:opacity-50 hover:bg-slate-800 transition w-full">
+                                            {updatingParams ? 'Updating...' : 'Update Active Password'}
+                                        </button>
+                                    </form>
                                 </div>
                                 
                                 <div className="mt-auto pt-8">
